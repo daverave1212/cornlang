@@ -1,0 +1,14 @@
+# depslib dependency file v1.0
+1521794895 source:d:\c++ projects\code parser\main.cpp
+	<iostream>
+	<vector>
+	"parser.h"
+	"object_finder.h"
+
+1520603119 d:\c++ projects\code parser\parser.h
+	<iostream>
+	<fstream>
+	<vector>
+
+1521799358 d:\c++ projects\code parser\object_finder.h
+
