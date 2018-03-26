@@ -22,18 +22,25 @@ int main()
     //parseCode("TestCorn.corn");
     Map<int> m;
     m.create();
-    m.push("doggo", 1337);
-    m.push("d", 420);
-    m.push("dog", 19990);
-    m.push("do", 2345);
-    m.push("dog", 19990);
-    m.push("d", 19990);
+    m.setNullElementTo(-1337);
+
+    m.push("doggo", 10);
+    m.push("d", 20);
+    m.push("dog", 30);
+    m.push("do", 40);
+    m.push("dog", 50);
+    m.push("d", 60);
+    cout<<"\n\n\n";
     cout<<m.getData("doggo")<<" - doggo \n";
     cout<<m.getData("d")<<" - d \n";
     cout<<m.getData("dog")<<" - dog \n";
+    cout<<m.getData("dag")<<" - dag \n";
     cout<<m.getData("do")<<" - do \n";
     cout<<m.getData("dog")<<" - dog \n";
+    cout<<m.getData("degge")<<" - degge \n";
     cout<<m.getData("d")<<" - d \n";
+    cout<<m.getData("dogge")<<" - dogge \n";
+    cout<<m.getData("doggox")<<" - doggox \n";
     return 0;
 
     m.push("doggo", 1337);
