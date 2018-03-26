@@ -150,46 +150,38 @@ public:
 
 //-------------------------------- Template Map Below (copy paste from above) ------------------------------------
 
-template <class T> class MapLetter
-{
-public:
+template <class T> class MapLetter {public:
 
     MapLetter<T>* nextLetter[63];
     char selfLetter;
     T data;
     bool hasData = false;
 
-    MapLetter<T>* getNextLetter(char c)
-    {
-        char letterIndex = charToLetterMapCode(c);
-        return nextLetter[letterIndex];
-    }
-
-    void setNextLetter(char c, MapLetter<T>* n)
-    {
-        char letterIndex = charToLetterMapCode(c);
-        nextLetter[letterIndex] = n;
-    }
-
-    MapLetter(char whatLetter)
-    {
+    MapLetter(char whatLetter) {
         selfLetter = whatLetter;
-        resetLetter();
-    }
+        resetLetter(); }
 
-    void setData(T t)
-    {
+    MapLetter<T>* getNextLetter(char c) {
+        char letterIndex = charToLetterMapCode(c);
+        return nextLetter[letterIndex]; }
+
+    void setNextLetter(char c, MapLetter<T>* n) {
+        char letterIndex = charToLetterMapCode(c);
+        nextLetter[letterIndex] = n; }
+
+    void setData(T t) {
         data = t;
-        hasData = true;
-    }
+        hasData = true; }
 
-    void resetLetter()
-    {
-        for(int i = 0; i < 63; i++)
-        {
-            nextLetter[i] = NULL;
-        }
-    }
+    T getData(){
+        return data;}
+
+    void resetLetter() {
+        for(int i = 0; i < 63; i++) {
+            nextLetter[i] = NULL; } }
+
+    char getSelfLetter(){
+        return selfLetter;}
 
 
 };
@@ -202,49 +194,50 @@ public:
     int nElements = 0;
     T nullElement;
 
-    void create()
-    {
+    void create(){
         defaultLetter = new MapLetter<T>('*');
         defaultLetter -> resetLetter();
     }
 
-    Map()
-    {
+    Map(){
         defaultLetter = new MapLetter<T>('*');
         defaultLetter->resetLetter();
     }
 
-    void push(std::string word, T Object)
-    {
+    void push(std::string word, T Object){
         int wordLength = word.length();
         if(wordLength == 0)
             return;
 
         int currentLetterIndex = 0;
         MapLetter<T>* parentLetterIterator = defaultLetter;
-        MapLetter<T>* letterIterator = defaultLetter -> getNextLetter(word[0]);
+        MapLetter<T>* letterIterator = defaultLetter->getNextLetter(word[0]);
 
         print "\n\tPushing word " print word print "\n";
 
         int i = 0;
-        while(i < wordLength)
-        {
-            print "At WORD letter " print word[i] print "\n";
-            if(letterIterator == NULL)
-            {
-                letterIterator = new MapLetter<T>(word[i]);
-                print "Letter pointer did not exist. Added " print letterIterator->selfLetter print ".\n";
-            }
-            print "At MAP  letter " print letterIterator->selfLetter print "\n";
-            parentLetterIterator->setNextLetter(word[i], letterIterator);
+        while(i < wordLength){
+            char currentLetter = word[i];
+            print "At parent letter "  print parentLetterIterator->getSelfLetter() print "\n";
+            if(letterIterator == NULL){
+                print "\tLetter pointer does not exist. Adding.\n";
+                MapLetter<T>* auxiliaryLetter = new MapLetter<T>(currentLetter);
+                print "\tCreated letter " print auxiliaryLetter->getSelfLetter() print "\n";
+                letterIterator = auxiliaryLetter;
+                print "letterIterator is " print letterIterator->getSelfLetter() print "\n";}
+            else print "\nAt current letter " print letterIterator->getSelfLetter() print "\n";
+            parentLetterIterator->setNextLetter(currentLetter, letterIterator);
+            print "\tSet parentLetterIterator to " print parentLetterIterator->getSelfLetter() print "\n";
             parentLetterIterator = letterIterator;
-            letterIterator = letterIterator->getNextLetter(word[i]);
-            if(letterIterator == NULL)
-            {
-                print "  As expected, next letter is null" print "\n";
+            print "\tparentLetterIterator now at " print parentLetterIterator->getSelfLetter() print "\n";
+            //letterIterator->setNextLetter(currentLetter, )
+            if(letterIterator == NULL){
+                print "Letter insertion success\n";
             }
             i++;
         }
+
+
         letterIterator = parentLetterIterator;
         i--;
         if(letterIterator -> hasData)
@@ -256,8 +249,7 @@ public:
         print "Word " print word print " successfully pushed.\n";
     }
 
-    bool isOccupied(std::string word)
-    {
+    bool isOccupied(std::string word){
         int wordLength = word.length();
         if(wordLength == 0)
             return false;

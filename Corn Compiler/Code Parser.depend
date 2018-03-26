@@ -12,3 +12,16 @@
 
 1521799358 d:\c++ projects\code parser\object_finder.h
 
+1522066867 source:d:\github\repositories\corn repository\corn compiler\main.cpp
+	<iostream>
+	<vector>
+	"parser.h"
+	"object_finder.h"
+
+1520606719 d:\github\repositories\corn repository\corn compiler\parser.h
+	<iostream>
+	<fstream>
+	<vector>
+
+1522068571 d:\github\repositories\corn repository\corn compiler\object_finder.h
+
