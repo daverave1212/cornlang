@@ -1,9 +1,0 @@
-#include <string>
-
-using something somethings;
-
-public static final inline void main(Stringp[]args){
-    call for(int i = getThisIndex(args); i++){
-        cout<<"Hello world";
-    }
-}
