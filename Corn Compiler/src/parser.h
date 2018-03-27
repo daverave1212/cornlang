@@ -94,12 +94,11 @@ void readFileIntoWords(std::string &pathToFile, StringMatrix &inputWords){
     int currentLineIndex = 0;
 
     while(std::getline(readFile, currentLine)){
-        print "\n\nRead line: ";
-        print currentLine + "\n";
-        print "Processed Line: ";
-        inputWords.push_back(newEmptyStringVector);
+        print "pushing line n " << currentLineIndex << "...\n";
+        //inputWords.push_back(newEmptyStringVector);
+        print "pushed. splitting\n";
         splitStringIntoWords(currentLine, inputWords[currentLineIndex]);
-        printArray(inputWords[currentLineIndex]);
+        print "split\n";
         currentLineIndex++;}
 }
 

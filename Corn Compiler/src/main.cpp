@@ -8,10 +8,13 @@
 
 using namespace std;
 
-
+ofstream out("testcorn.txt");
 
 int main()
 {
+    parseCode("TestCorn.corn");
+    //out << parseCode("TestCorn.corn");
+    return 0;
 
     //vector<string> v;
     //string input = "for(int i=0; i<340; i++){";
