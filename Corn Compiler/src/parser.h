@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include "object_finder.h"
 
 #define print std::cout<<
 #define read  std::cin>>
@@ -21,7 +22,7 @@ inline bool isSpaceOrTab(char c){
     if(c == ' ' || c == '\t') return true;
     else return false;}
 
-std::string singleOperatorCharacters = "()[]{};";
+std::string singleOperatorCharacters = "()[]{};,.";
 inline bool isSingleOperator(char c){
     if(singleOperatorCharacters.find(c) != std::string::npos){
         return true;}
@@ -36,6 +37,7 @@ inline bool isDoubleOperator(char c){
 }
 
 void splitStringIntoWords(std::string &s, std::vector<std::string>& v){
+	print "Splitting string into words...\n";
 
     std::string currentWord = "";
     bool lastCharacterWasDoubleOperator   = false;    // ONLY FOR DOUBLE OPERATORS
@@ -47,6 +49,9 @@ void splitStringIntoWords(std::string &s, std::vector<std::string>& v){
 
         if( isSpaceOrTab(currentLetter) ){ //..."  "...
             if(currentWord.length() > 0){
+				print "Found tab or space. Pushing word: ";
+				print currentWord;
+				print "\n";
                 v.push_back(currentWord);
                 currentWord = "";}
             lastCharacterWasDoubleOperator = false;
@@ -54,8 +59,14 @@ void splitStringIntoWords(std::string &s, std::vector<std::string>& v){
 
         else if( isSingleOperator(currentLetter)){ //...(...
             if(currentWord.length() > 0){
+				print "Found single operator. Pushing word: ";
+				print currentWord;
+				print "\n";
                 v.push_back(currentWord);}
             currentWord = currentLetter;
+			print "Now pushing operator: ";
+			print currentWord;
+			print "\n";
             v.push_back(currentWord);
             currentWord = "";
             lastCharacterWasSpace = false;
@@ -66,11 +77,17 @@ void splitStringIntoWords(std::string &s, std::vector<std::string>& v){
             lastCharacterWasLetter  = false;
             if( lastCharacterWasDoubleOperator ){
                 currentWord += currentLetter;
+				print "Found double operator. Pushing it: ";
+				print currentWord;
+				print "\n";
                 v.push_back(currentWord);
                 currentWord = "";
                 lastCharacterWasDoubleOperator = false;}
             else if( lastCharacterWasDoubleOperator == false ){
                 if(currentWord.length() > 0){
+					print "Found a (possible double) operator. Pushing word behind: ";
+					print currentWord;
+					print "\n";
                     v.push_back(currentWord);}
                 lastCharacterWasDoubleOperator = true;
                 currentWord = "";
@@ -80,10 +97,22 @@ void splitStringIntoWords(std::string &s, std::vector<std::string>& v){
             lastCharacterWasLetter  = true;
             lastCharacterWasSpace   = false;
             if(lastCharacterWasDoubleOperator){
+				print "Found a single-double-operator. Pushing it: ";
+				print currentWord;
+				print "\n";
                 v.push_back(currentWord);
                 currentWord = "";
                 lastCharacterWasDoubleOperator = false;}
             currentWord += currentLetter;}
+		if(i == s.length() - 1){
+			if(currentWord.length() > 0){
+				v.push_back(currentWord);
+				currentWord = "";
+			}
+			lastCharacterWasSpace = true;
+			lastCharacterWasDoubleOperator = false;
+			lastCharacterWasLetter = true;
+		}
     }
 }
 
@@ -95,15 +124,24 @@ void readFileIntoWords(std::string &pathToFile, StringMatrix &inputWords){
 
     while(std::getline(readFile, currentLine)){
         print "pushing line n " << currentLineIndex << "...\n";
-        //inputWords.push_back(newEmptyStringVector);
-        print "pushed. splitting\n";
+        inputWords.push_back(newEmptyStringVector);
+        print "pushed. splitting <[" << currentLine<< "]> into words\n";
         splitStringIntoWords(currentLine, inputWords[currentLineIndex]);
         print "split\n";
         currentLineIndex++;}
 }
 
 void cornToCPP(StringMatrix &in, StringMatrix &out){
-
+	std::cout<<"Transforming code into cpp\n";
+	std::cout<<"Length of in: "<<in.size()<<"\n";
+	out.reserve(in.size());	//this doesn't do anything, it just reserves so it runs faster!
+	for(int i = 0; i<in.size(); i++){
+		out.push_back(newEmptyStringVector);
+		out[i].reserve(in[i].size()); //same here. if we remove the 2 lines, it works still
+		for(int j = 0; j<in[i].size(); j++){
+			out[i].push_back(in[i][j]);
+		}
+	}
 }
 
 std::string parseCode(std::string pathToFile){
@@ -112,15 +150,26 @@ std::string parseCode(std::string pathToFile){
     StringMatrix outputWords(0);
 
     readFileIntoWords(pathToFile, inputWords);
+	print "input words size: ";
+	print inputWords.size();
+	print "\n";
 
     cornToCPP(inputWords, outputWords);
 
+	print "output words size: ";
+	print outputWords.size();
+	print "\n";
 
+	std::string returnedString = "";
+	for(int i = 0; i<outputWords.size(); i++){
+		for(int j = 0; j<outputWords[i].size(); j++){
+			returnedString += outputWords[i][j] + " ";
+			std::cout<<"Word: " << outputWords[i][j] << "\n";
+		}
+		returnedString += "\n";
+	}
 
-
-
-
-
+    return returnedString;
 }
 
 

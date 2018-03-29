@@ -120,9 +120,10 @@ template <class T> class Map{public:
 
 
     T getData(std::string word) {
-        int wordLength = word.length();
-        if(wordLength == 0)
+        if(word.length() == 0)
             return false;
+        int wordLength = word.length();
+
 
         int currentLetterIndex = 0;
         MapLetter<T>* letterIterator = defaultLetter;
@@ -135,11 +136,12 @@ template <class T> class Map{public:
             print "Word " << word << " not found: case NULL. Returning null.\n";
             return nullElement; }
         else if(currentLetterIndex == wordLength) {
-            print "Found word " print word print ". Returning it.\n";
-            return letterIterator -> data; }
-        else {
-            print "Word " << word << " not found: case LENGTH. Returning null.\n";
-            return nullElement; } }
+            if(letterIterator->hasData){
+                print "Found word " print word print ". Returning it.\n";
+                return letterIterator -> data;
+            }
+            }
+    }
 
 
 };
