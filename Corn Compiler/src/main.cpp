@@ -17,10 +17,11 @@ int main()
 {
     START:
 
-    out << parseCode("TestCorn.corn");
+    Map<int> myMap;
+    out << parseCode("TestCorn.corn", myMap);
     //out << "crocodil";
    // return 0;
-
+    return 0;
     int x;
     cin>>x;
     goto START;

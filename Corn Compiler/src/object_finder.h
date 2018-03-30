@@ -14,6 +14,8 @@ int charToLetterMapCode(const char &c){
         return c - 29;
     if( c == '_')
         return 62;
+
+
 }
 // 0 1 2 ... 9      =   0 1 2 ... 9
 // a b c ...  Z     =   10 11 12 ... 35
