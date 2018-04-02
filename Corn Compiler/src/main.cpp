@@ -10,23 +10,27 @@
 #include <vector>
 #include "parser.h"
 #include "object_finder.h"
+#include "map_init.h"
 
 using namespace std;
 
 ofstream out("testcorn.txt");
+
+
 
 int main()
 {
     START:
 
     Map<int> myMap;
+    initMap(myMap);
     out << parseCode("TestCorn.corn", myMap);
     //out << "crocodil";
    // return 0;
-    return 0;
+    //return 0;
     int x;
     cin>>x;
-    goto START;
+   // goto START;
 
     Map<int> m;
     m.create();

@@ -14,8 +14,6 @@ int charToLetterMapCode(const char &c){
         return c - 29;
     if( c == '_')
         return 62;
-
-
 }
 // 0 1 2 ... 9      =   0 1 2 ... 9
 // a b c ...  Z     =   10 11 12 ... 35
@@ -62,9 +60,7 @@ template <class T> class Map{public:
 
     MapLetter<T>* defaultLetter;
     int nElements = 0;
-    T nullElement;
-
-
+    T nullElement;  /* this will be returned if the word is not found */
 
     Map(){
         defaultLetter = new MapLetter<T>('*');
@@ -82,7 +78,6 @@ template <class T> class Map{public:
         if(wordLength == 0)
             return;
 
-        int currentLetterIndex = 0;
         MapLetter<T>* parentLetterIterator = defaultLetter;
         MapLetter<T>* letterIterator = defaultLetter->getNextLetter(word[0]);
 
@@ -125,8 +120,6 @@ template <class T> class Map{public:
         if(word.length() == 0)
             return false;
         int wordLength = word.length();
-
-
         int currentLetterIndex = 0;
         MapLetter<T>* letterIterator = defaultLetter;
 
@@ -134,14 +127,16 @@ template <class T> class Map{public:
             int wordCurrentLetterCode = charToLetterMapCode(word[currentLetterIndex]);
             letterIterator = letterIterator->nextLetter[wordCurrentLetterCode];
             currentLetterIndex++; }
-        if(letterIterator == NULL) {
-            print "Word " << word << " not found: case NULL. Returning null.\n";
-            return nullElement; }
+        if(letterIterator == NULL)
+            return nullElement;
         else if(currentLetterIndex == wordLength) {
             if(letterIterator->hasData){
                 print "Found word " print word print ". Returning it.\n";
-                return letterIterator -> data;
-            }
+                return letterIterator -> data;}
+			else{
+				print "Word not found " print word print ". Returning null.\n";
+				return nullElement;
+			}
             }
     }
 

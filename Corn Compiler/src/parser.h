@@ -7,6 +7,8 @@
 #include <fstream>
 #include <vector>
 #include "object_finder.h"
+#include "quote_characters.h"
+#include "map_words_definitions.h"
 
 #define print std::cout<<
 #define read  std::cin>>
@@ -18,8 +20,7 @@
 #define FirstLetterIsOperator(x) ( x[0] >= 33 && x[0] <= 47 ) || ( x[0] >= 58 && x[0] <= 64 ) || ( x[0] >= 91 && x[0] <= 94 ) || ( x[0] == 96 ) || ( x[0] >= 193 && x[0] <= 196 )
 #define FirstLetterIsNumber(x) ( x[0] >= 48 && x[0] <= 57 )
 
-#define QUOTECHARACTER	'`'
-#define QUOTESTRING		"`"
+
 
 std::string getPreviousWord(int currentRowIndex, int currentColIndex, StringMatrix &words){
 	int previousRowIndex = currentRowIndex;
@@ -62,6 +63,20 @@ inline bool isDoubleOperator(char c){
     else return false;
 }
 
+std::string operatorCharacters = "()[]{};,.!%&*|=-+<>";
+inline bool isCharOperator(char c){
+    if(operatorCharacters.find(c) != std::string::npos){
+        return true;}
+    else return false;}
+
+inline bool isStringOperator(std::string s){
+	if(s.length() == 0 || s.length() > 2){
+		return false;}
+	if(isCharOperator(s[0])){
+		return true;}
+	else return false;
+}
+
 inline bool isQuote(char c){
 	if(c == QUOTECHARACTER){
 		return true;}
@@ -73,8 +88,6 @@ void splitStringIntoWords(std::string &s, std::vector<std::string>& v){
 
     std::string currentWord = "";
     bool lastCharacterWasDoubleOperator   = false;    // ONLY FOR DOUBLE OPERATORS
-    bool lastCharacterWasSpace      = false;
-    bool lastCharacterWasLetter     = false;
 	bool isProcessingString = false;
 
 
@@ -92,9 +105,7 @@ void splitStringIntoWords(std::string &s, std::vector<std::string>& v){
 					currentWord = "";}
 				currentWord = QUOTESTRING;
 				isProcessingString = true;
-				lastCharacterWasDoubleOperator = false;
-				lastCharacterWasSpace = false;
-				lastCharacterWasLetter = false;}
+				lastCharacterWasDoubleOperator = false;}
 			else{
 				currentWord += currentLetter;
 				print "Ended a string. Pushing it as a whole word: ";
@@ -115,8 +126,7 @@ void splitStringIntoWords(std::string &s, std::vector<std::string>& v){
 				print "\n";
                 v.push_back(currentWord);
                 currentWord = "";}
-            lastCharacterWasDoubleOperator = false;
-            lastCharacterWasSpace = true;}
+            lastCharacterWasDoubleOperator = false;}
 
         else if( isSingleOperator(currentLetter)){ //...(...
             if(currentWord.length() > 0){
@@ -130,12 +140,9 @@ void splitStringIntoWords(std::string &s, std::vector<std::string>& v){
 			print "\n";
             v.push_back(currentWord);
             currentWord = "";
-            lastCharacterWasSpace = false;
             lastCharacterWasDoubleOperator = false;}
 
         else if( isDoubleOperator(currentLetter) ){ //...+ or ...+=...
-            lastCharacterWasSpace   = false;
-            lastCharacterWasLetter  = false;
             if( lastCharacterWasDoubleOperator ){
                 currentWord += currentLetter;
 				print "Found double operator. Pushing it: ";
@@ -155,8 +162,6 @@ void splitStringIntoWords(std::string &s, std::vector<std::string>& v){
                 currentWord += currentLetter;}}
 
         else { //...aLetter...
-            lastCharacterWasLetter  = true;
-            lastCharacterWasSpace   = false;
             if(lastCharacterWasDoubleOperator){
 				print "Found a single-double-operator. Pushing it: ";
 				print currentWord;
@@ -168,11 +173,8 @@ void splitStringIntoWords(std::string &s, std::vector<std::string>& v){
 		if(i == s.length() - 1){
 			if(currentWord.length() > 0){
 				v.push_back(currentWord);
-				currentWord = "";
-			}
-			lastCharacterWasSpace = true;
+				currentWord = "";}
 			lastCharacterWasDoubleOperator = false;
-			lastCharacterWasLetter = true;
 		}
     }
 }
@@ -189,62 +191,75 @@ void readFileIntoWords(std::string &pathToFile, StringMatrix &inputWords){
         print "pushed. splitting <[" << currentLine<< "]> into words\n";
         splitStringIntoWords(currentLine, inputWords[currentLineIndex]);
         print "split\n";
-        currentLineIndex++;}
-}
+        currentLineIndex++;}}
 
-void cornToCPP(StringMatrix &in, StringMatrix &out, Map<int> &map){
-	std::cout<<"Transforming code into cpp\n";
+std::string parseCode(std::string pathToFile, Map<int>& map){
+
+    StringMatrix in(0);
+    StringMatrix out(0);
+
+    readFileIntoWords(pathToFile, in);
+	print "input words size: ";
+	print in.size();
+	print "\n";
+
+	/* 			cornToCPP(inputWords, outputWords, map){ */
+    std::cout<<"Transforming code into cpp\n";
 	std::cout<<"Length of in: "<<in.size()<<"\n";
 
 	bool isWritingString = false;
 
 	out.reserve(in.size());	//this doesn't do anything, it just reserves so it runs faster!
+
+	bool nextWordIsImportPath = false;
+
 	for(int i = 0; i<in.size(); i++){
 		out.push_back(newEmptyStringVector);
 		out[i].reserve(in[i].size()); //same here. if we remove the 2 lines, it works still
 		for(int j = 0; j<in[i].size(); j++){
 			std::string inputWord = in[i][j];
-			/*std::string outputWord = "";
+			std::string outputWord = "";
 
-			if( FirstLetterIsOperator(inputWord) ){
-				switch(inputWord){
-					case ".": outputWord = "->"; break;
+			//CODE FOR INTERPRETING WORDS IS HERE
 
+			if(nextWordIsImportPath){	// "standard.corn"
+				nextWordIsImportPath = false;
+				inputWord = inputWord.substr(1, inputWord.length() - 2);
+				outputWord = parseCode(inputWord, map);
+			}
+			else if(isStringOperator(inputWord)){	// + - = \ ...
 
+			}
+			else{	//aWord...
+				int currentWordAsInt = map.getData(inputWord);
+				switch(currentWordAsInt){
+					case NOT_FOUND:
+						outputWord = inputWord;
+						break;
+					case IMPORT:
+						outputWord = "\n";
+						nextWordIsImportPath = true;
+						break;
 
-					default: outputWord = inputWord;
 				}
 			}
-			else if( FirstLetterIsNumber(inputWord) ){
-				outputWord = inputWord;
-			}
-			*/
-			out[i].push_back(inputWord);
-		}//end for for this line
+
+
+
+			//CODE FOR INTERPRETING WORDS IS HERE
+			out[i].push_back(outputWord);
+		}//end for
 	}
-}
-
-std::string parseCode(std::string pathToFile, Map<int>& map){
-
-    StringMatrix inputWords(0);
-    StringMatrix outputWords(0);
-
-    readFileIntoWords(pathToFile, inputWords);
-	print "input words size: ";
-	print inputWords.size();
-	print "\n";
-
-    cornToCPP(inputWords, outputWords, map);
+    /* cornToCPP(inputWords, outputWords, map){ */
 
 	print "output words size: ";
-	print outputWords.size();
+	print out.size();
 	print "\n";
 
 	std::string returnedString = "";
-	for(int i = 0; i<outputWords.size(); i++){
-		for(int j = 0; j<outputWords[i].size(); j++){
-			returnedString += outputWords[i][j] + " ";
-			std::cout<<"Word: " << outputWords[i][j] << "\n";
+	for(int i = 0; i<out.size(); i++){
+		for(int j = 0; j<out[i].size(); j++){
+			returnedString += out[i][j] + " ";
 		}
 		returnedString += "\n";
 	}
