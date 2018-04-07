@@ -1,0 +1,69 @@
+
+automatically put a ; at the end of the line, no matter what
+
+import copy pastes code
+
+
+class		puts "{" at the end of the line
+			checks for last word on the line and adds it to the tree as a CLASSOBJECT
+primitives have a PRIMITIVE to them
+if			becomes "if(" and puts "){" at the end of the line
+
+.			if the previous word is was a class, becomes ::
+			else becomes ->
+
+public		becomes public:
+private		becomes private:
+static		records all line until it finds a word with no data in the tree
+
+<			if previous word was "template", append "class" to it
+
+function definitions:
+	
+
+
+	int myFunction()
+	
+	
+Objects and pointers:
+	Add a "*" after an object definition when:
+		If not function
+			At first occurence of an object, mark the line (NOT ARRAY OR MATRIX THOUGH)
+				At first occurence of "=" or "does", previous previous word appends "*"
+		If function
+			At occurence of an object on the same level
+				If next character is <
+					Find the end > on the same level and append *
+				Else
+					Append *
+				
+			
+			
+	
+class Object{....}
+
+Object o = new Object;							Object* o = new Object();
+Object<Object> o = new Object<Object>()			Object<Object>* o = new Object<Object>();
+
+template<class T> static int myFunction(Object<Object> o, Object<Object<Object>> p)
+
+	200		cafea
+	200		trufe
+	75		spanac
+	160		curcan
+	200		orez cu broccoli
+	160		curcan
+	325		orez
+	500		shanghai
+	50		extra
+	____
+	1230
+	
+
+
+
+
+
+
+
+

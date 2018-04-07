@@ -225,11 +225,12 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 			if(nextWordIsImportPath){	// "standard.corn"
 				nextWordIsImportPath = false;
 				inputWord = inputWord.substr(1, inputWord.length() - 2);
-				outputWord = parseCode(inputWord, map);
-			}
+				outputWord = parseCode(inputWord, map);}
 			else if(isStringOperator(inputWord)){	// + - = \ ...
-
-			}
+				switch(inputWord){
+					case "->":
+						outputWord = ".";
+						break;}}
 			else{	//aWord...
 				int currentWordAsInt = map.getData(inputWord);
 				switch(currentWordAsInt){
