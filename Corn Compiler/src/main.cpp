@@ -1,5 +1,4 @@
-// Current working version: 0.07
-// Next pushed version:     0.08
+// Version:     0.08
 //THIS IS IN GITHUB REPOSITORY
 //THE PROJECT DOES NOTTTT COPY THEM INTO THE WORKING DIR
 //IT WORKS DIRECTLY WITH THOSE

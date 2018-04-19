@@ -1,20 +1,28 @@
 
 automatically put a ; at the end of the line, no matter what
 
-import copy pastes code
+[DONE] import copy pastes code
 
 
-class		puts "{" at the end of the line
-			checks for last word on the line and adds it to the tree as a CLASSOBJECT
-primitives have a PRIMITIVE to them
-if			becomes "if(" and puts "){" at the end of the line
+[DONE] class		puts "{" at the end of the line
+			checks for last word on the line and adds it to the tree as a CLASSNAME
+[DONE] primitives have a PRIMITIVE to them
+[DONE] if			becomes "if(" and puts "){" at the end of the line
 
-.			if the previous word is was a class, becomes ::
+[DONE] .			if the previous word is was a class, becomes ::
 			else becomes ->
 
-public		becomes public:
-private		becomes private:
+[DONE] public		becomes public:
+[DONE] private		becomes private:
 static		records all line until it finds a word with no data in the tree
+
+	public static Object<Object> ob = new Object<Object>()
+	
+	public: static Object<Object> ob;
+	...
+	Object<Object> CLASS::ob = new Object<Object>();
+	
+	
 
 <			if previous word was "template", append "class" to it
 
@@ -43,22 +51,9 @@ Objects and pointers:
 class Object{....}
 
 Object o = new Object;							Object* o = new Object();
-Object<Object> o = new Object<Object>()			Object<Object>* o = new Object<Object>();
+Object<Object> o = new Object<Object>()			Object<Object*>* o = new Object<Object>();
 
 template<class T> static int myFunction(Object<Object> o, Object<Object<Object>> p)
-
-	200		cafea
-	200		trufe
-	75		spanac
-	160		curcan
-	200		orez cu broccoli
-	160		curcan
-	325		orez
-	500		shanghai
-	50		extra
-	____
-	1230
-	
 
 
 

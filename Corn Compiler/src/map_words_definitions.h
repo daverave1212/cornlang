@@ -3,6 +3,14 @@
 
 #define NOT_FOUND	0
 #define IMPORT		1
+#define CLASS		2
+#define CLASSNAME	3
+#define PRIMITIVE	4
+#define IF			5
+#define PUBLIC		6
+#define PRIVATE		7
+#define BRACKET		8
+#define STATIC		10
 
 
 
