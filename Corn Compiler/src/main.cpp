@@ -25,7 +25,7 @@ int main()
     initMap(myMap);
     out << parseCode("TestCorn.corn", myMap);
     //out << "crocodil";
-   // return 0;
+    return 0;
     //return 0;
     int x;
     cin>>x;

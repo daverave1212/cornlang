@@ -25,7 +25,25 @@
 
 #define check(x) else if(inputWord == x)
 
+void printArray(std::vector<std::string> v){
+	std::cout<<"\n";
+	for( int i = 0; i<v.size(); i++){
+		std::cout<<v[i]<<" ";
+	}
+	std::cout<<"\n\n";
+}
 
+void insertInArrayAfterPosition(std::vector<std::string> &v, std::string s, int pos){
+	v.push_back("");
+	for(int insertIndex = v.size() - 1; insertIndex >= pos + 1; insertIndex--){
+		v[insertIndex] = v[insertIndex - 1];}
+	v[pos + 1] = s;}
+
+void insertInArrayBeforePosition(std::vector<std::string> &v, std::string s, int pos){
+	v.push_back("");
+	for(int insertIndex = v.size() - 1; insertIndex >= pos + 1; insertIndex--){
+		v[insertIndex] = v[insertIndex - 1];}
+	v[pos] = s;}
 
 std::string getPreviousWord(int currentRowIndex, int currentColIndex, StringMatrix &words){
 	int previousRowIndex = currentRowIndex;
@@ -40,6 +58,17 @@ std::string getPreviousWord(int currentRowIndex, int currentColIndex, StringMatr
 	return words[previousRowIndex][previousColIndex];}
 #define previousWord getPreviousWord(i, j, in)
 
+std::string getPreviousWordAndIndexes(int &currentRowIndex, int &currentColIndex, StringMatrix &words){
+	currentColIndex = currentColIndex - 1;
+	while(currentColIndex < 0){
+		currentRowIndex--;
+		if(currentColIndex < 0){
+			return "NOPREVIOUSWORD";
+		}
+		currentColIndex = words[currentRowIndex].size() - 1;
+	}
+	return words[currentRowIndex][currentColIndex];}
+
 std::string getNextWord(int currentRowIndex, int currentColIndex, StringMatrix &words){
 	int previousRowIndex = currentRowIndex;
 	int previousColIndex = currentColIndex + 1;
@@ -50,14 +79,9 @@ std::string getNextWord(int currentRowIndex, int currentColIndex, StringMatrix &
 		previousColIndex = 0;}
 	return words[previousRowIndex][previousColIndex];}
 #define nextWord getNextWord(i, j, in)
-	
+
 #define FirstLetterOf(x) x[0]
 
-void printArray(std::vector<std::string> v){
-    for(int i = 0; i<v.size(); i++){
-        std::cout<<v[i]<< " ";}
-    std::cout<<"\n";
-}
 
 inline bool isSpaceOrTab(char c){
     if(c == ' ' || c == '\t') return true;
@@ -83,6 +107,7 @@ inline bool isCharOperator(char c){
         return true;}
     else return false;}
 
+
 inline bool isStringOperator(std::string s){
 	if(s.length() == 0 || s.length() > 2){
 		return false;}
@@ -90,6 +115,7 @@ inline bool isStringOperator(std::string s){
 		return true;}
 	else return false;
 }
+
 
 inline bool isQuote(char c){
 	if(c == QUOTECHARACTER){
@@ -226,7 +252,7 @@ class StaticMembers{public:
 	void addNewMember(std::vector<std::string> parsedLine){
 		words.push_back(parsedLine);
 		currentMember++;}
-	
+
 
 	std::string processCurrentMember(std::string staticMemberParentClass){
 		bool memberWasInitialized = false;
@@ -251,15 +277,6 @@ class StaticMembers{public:
 		words[currentMember].clear();
 		words[currentMember].push_back(changeLine);
 		return returnedLine;}
-	/*
-	IT IS DONE. JUST IMPLEMENT IT
-	
-	Object < Object*, Object* > *ob = new Object<Object>()	//the function takes the OUTPUT WORDs LINE (already parsed line)
-
-	Object < Object*, Object* > *ob ;	//returnedLine
-	...
-	Object < Object*, Object* > *CLASS::ob = new Object<Object>() //changeLine
-	*/
 };
 
 std::string parseCode(std::string pathToFile, Map<int>& map){
@@ -292,7 +309,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 		out.push_back( newEmptyStringVector );
 		int nWordsInLine = in[i].size();
 		out[i].reserve( nWordsInLine ); //same here. if we remove the 2 lines, it works still
-		for(int j = 0; j<nWordsInLine; j++){
+		for(int j = 0; j<in[i].size(); j++){
 			std::string inputWord = in[i][j];
 			std::string outputWord = "";
 			//CODE FOR INTERPRETING WORDS IS HERE
@@ -314,7 +331,67 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 					else{
 						outputWord = "->";}}
 				check("["){
-					outputWord = "->getElement(";}
+					// MAY BE VERY BUGGED. CHECK LATER
+					int kCurrent = j;
+					j = -1;	//cuz it will do the j++ and restart for all the line
+					outputWord = "";
+					out[i].clear();
+					std::vector<std::string> kLine = std::vector<std::string>(in[i].size());
+					int indexOfBracket = 0;
+					for(int kIndex = 0; kIndex < in[i].size(); kIndex++){
+						kLine[kIndex] = in[i][kIndex];}
+					bool lineContainsBracket = true;
+
+					while(lineContainsBracket){
+						lineContainsBracket = false;
+						for(int kIndex = 0; kIndex < kLine.size(); kIndex++){
+							if(kLine[kIndex] == "["){
+								indexOfBracket = kIndex;
+								lineContainsBracket = true;
+								break;}}
+						if(lineContainsBracket == false){
+							break;}
+						int kStack = 0;
+						int startGetIndex = 0;
+						for(int kIndex = indexOfBracket; kIndex >= 0; kIndex--){
+							startGetIndex = kIndex;
+							if(isStringOperator(kLine[kIndex])){
+								if(kLine[kIndex] == ")"){
+									kStack++;}
+								else if(kLine[kIndex] == "("){
+									kStack--;
+									if(kStack < 0){
+										break;}}
+								else{
+									if(kStack == 0 && kLine[kIndex] != "["){
+										startGetIndex++;
+										break;}
+									else{
+										/*doNothng*/}}}}
+						std::cout << "startGetIndex : " << startGetIndex << "\n";
+						kStack = 0;
+						int endGetIndex = 0;
+						for(int kIndex = indexOfBracket + 1; kIndex < kLine.size(); kIndex++){
+							endGetIndex = kIndex;
+							if(kLine[kIndex] == "["){
+								kStack++;}
+							else if(kLine[kIndex] == "]"){
+								kStack--;
+								if(kStack < 0){
+									break;}}}
+						printArray(kLine);
+						kLine[indexOfBracket] = ",";
+						printArray(kLine);
+						kLine[endGetIndex] = ")";
+						printArray(kLine);
+						insertInArrayBeforePosition(kLine, "(", startGetIndex);
+						printArray(kLine);
+						insertInArrayBeforePosition(kLine, "elem", startGetIndex);
+						printArray(kLine);
+						}	
+					in[i] = kLine;
+					printArray(in[i]);
+					}
 				check("]"){
 					outputWord = ")";}
 				check("<"){
@@ -330,8 +407,8 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 							isInTemplate = false;}
 						if(nextWord != "(" && code(nextWord) != CLASS){
 							outputWord += "*";}
-						
-						
+
+
 						// Object <...   >*    ob
 							}
 					}
@@ -375,7 +452,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						//		v
 						//Object<Object*>* ob
 						//
-						//template<class T, 
+						//template<class T,
 						break;
 					case BRACKET:
 						outputWord = "}";
@@ -417,7 +494,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 			out[i].push_back(outputWord);
 		}//END OF THE LINE TO PARSE
 
-		
+
 		// adding Brackets, Colons, etc
 		if(thisLineWasEndOfClass){
 			thisLineWasEndOfClass = false;

@@ -1,0 +1,21 @@
+THIS IS FIRST LINE 
+
+
+ xxxxxxxxxxxxxxxxxxxxxxxxxx 
+xxxxxxxxxxxxxxxxxxxxxxxxxx 
+xxxxxxxxxxxxxxxxxxxxxxxxxx 
+xxxxxxxxxxxxxxxxxxxxxxxxxx 
+xxxxxxxxxxxxxxxxxxxxxxxxxx 
+ 
+
+
+Array < int > a 
+"a [ 10 ] [ 20 ]" 
+ elem ( elem ( a , x ) , x ) 
+"a [ 10 ]" 
+ elem ( a , 10 ) 
+a ( 10 ) ( 20 ) 
+ elem ( elem ( a , 0 ) , elem ( a , 0 ) -> length + 20 ) 
+
+THIS IS NEXT NEXT LINE 
+HELLO NIGGER PLS 
