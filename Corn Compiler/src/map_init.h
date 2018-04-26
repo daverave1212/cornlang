@@ -18,10 +18,18 @@ void initMap(Map<int> &m){
 	m.push("float", PRIMITIVE);
 	m.push("string", PRIMITIVE);
 	m.push("if", IF);
+	m.push("does", DOES);
+	m.push("while", WHILE);
+	m.push("for", FOR);
 	m.push("public", PUBLIC);
 	m.push("private", PRIVATE);
 	m.push("end", BRACKET);
 	m.push("static", STATIC);
+	m.push("and", AND);
+	m.push("or", OR);
+	
+	m.push("start", START);
+	m.push("program", PROGRAM);
 
 }
 

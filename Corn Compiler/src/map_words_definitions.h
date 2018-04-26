@@ -6,11 +6,20 @@
 #define CLASS		2
 #define CLASSNAME	3
 #define PRIMITIVE	4
-#define IF			5
+#define DOES		5
 #define PUBLIC		6
 #define PRIVATE		7
 #define BRACKET		8
 #define STATIC		10
+#define IF			11
+#define WHILE		12
+#define FOR			13
+#define AND			14
+#define OR			15
+
+#define START		100
+#define PROGRAM		101
+
 
 
 

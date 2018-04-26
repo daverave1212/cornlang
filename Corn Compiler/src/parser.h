@@ -22,6 +22,7 @@
 #define LastWordOfInputLine in[i][nWordsInLine - 1]
 #define LastWordOfOutputLine out[i][out[i].size() - 1]
 #define code(x) map.getData(x)
+#define FirstLetterOf(x) x[0]
 
 #define check(x) else if(inputWord == x)
 
@@ -80,8 +81,6 @@ std::string getNextWord(int currentRowIndex, int currentColIndex, StringMatrix &
 	return words[previousRowIndex][previousColIndex];}
 #define nextWord getNextWord(i, j, in)
 
-#define FirstLetterOf(x) x[0]
-
 
 inline bool isSpaceOrTab(char c){
     if(c == ' ' || c == '\t') return true;
@@ -107,14 +106,18 @@ inline bool isCharOperator(char c){
         return true;}
     else return false;}
 
+std::string digitCharacters = "0123456789";
+inline bool isStringNumber(std::string s){
+	if(digitCharacters.find(s) != std::string::npos){
+		return true;}
+	else return false;}
 
 inline bool isStringOperator(std::string s){
 	if(s.length() == 0 || s.length() > 2){
 		return false;}
 	if(isCharOperator(s[0])){
 		return true;}
-	else return false;
-}
+	else return false;}
 
 
 inline bool isQuote(char c){
@@ -309,6 +312,9 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 		out.push_back( newEmptyStringVector );
 		int nWordsInLine = in[i].size();
 		out[i].reserve( nWordsInLine ); //same here. if we remove the 2 lines, it works still
+
+		bool addSemicolonAtTheEnd = true;
+
 		for(int j = 0; j<in[i].size(); j++){
 			std::string inputWord = in[i][j];
 			std::string outputWord = "";
@@ -320,11 +326,16 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 				inputWord = inputWord.substr(1, inputWord.length() - 2);
 				outputWord = parseCode(inputWord, map);}
 
+			// a NUMBER 123458
+			else if(isStringNumber(inputWord)){
+				outputWord = inputWord;}
+
 			// an OPERATOR
 			else if(isStringOperator(inputWord)){	// + - = \ ...
 				if(inputWord == ""){}
 				check(";"){
-					outputWord = "@";}
+					addSemicolonAtTheEnd = false;
+					outputWord = ";}";}
 				check("."){
 					if(map.getData(previousWord) == CLASSNAME){
 						outputWord = "::";}
@@ -341,7 +352,6 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 					for(int kIndex = 0; kIndex < in[i].size(); kIndex++){
 						kLine[kIndex] = in[i][kIndex];}
 					bool lineContainsBracket = true;
-
 					while(lineContainsBracket){
 						lineContainsBracket = false;
 						for(int kIndex = 0; kIndex < kLine.size(); kIndex++){
@@ -353,21 +363,29 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 							break;}
 						int kStack = 0;
 						int startGetIndex = 0;
+						bool lastWordWasNotOperator = false;
 						for(int kIndex = indexOfBracket; kIndex >= 0; kIndex--){
 							startGetIndex = kIndex;
 							if(isStringOperator(kLine[kIndex])){
+								lastWordWasNotOperator = false;
 								if(kLine[kIndex] == ")"){
 									kStack++;}
 								else if(kLine[kIndex] == "("){
 									kStack--;
 									if(kStack < 0){
+										startGetIndex++;
 										break;}}
 								else{
 									if(kStack == 0 && kLine[kIndex] != "["){
 										startGetIndex++;
 										break;}
-									else{
-										/*doNothng*/}}}}
+									else{}}}
+							else{
+								if(lastWordWasNotOperator){		//prevents return a[1]
+									startGetIndex++;
+									break;}
+								else lastWordWasNotOperator = true;}
+						}
 						std::cout << "startGetIndex : " << startGetIndex << "\n";
 						kStack = 0;
 						int endGetIndex = 0;
@@ -388,7 +406,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						printArray(kLine);
 						insertInArrayBeforePosition(kLine, "elem", startGetIndex);
 						printArray(kLine);
-						}	
+						}
 					in[i] = kLine;
 					printArray(in[i]);
 					}
@@ -439,20 +457,9 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 							if(nextWord == "<"){//the * is put above, at '//an OPERATOR' at '>'
 								isInTemplate = true;}
 							if(nextWord == ">" || nextWord == ","){
-								addStarAfterThisWord = true;}
-						}
+								addStarAfterThisWord = true;}}
 						else if( code(nextWord) == NOT_FOUND ){ //probably Object ob
-							addStarAfterThisWord = true;
-						}
-						//Object<Object> o = new Object<Object>()			Object<Object*>* o = new Object<Object>();
-						//Object<Object, int, Object<Object>, bool> o = new ...
-						//		v
-						//Object<Object*, int, Object<Object*>*, bool>* ob = new Object....
-						//Object<Object*>* ob
-						//		v
-						//Object<Object*>* ob
-						//
-						//template<class T,
+							addStarAfterThisWord = true;}
 						break;
 					case BRACKET:
 						outputWord = "}";
@@ -463,6 +470,17 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						break;
 					case IF:
 						outputWord = "if(";
+						addParanthesisAtTheEnd = true;
+						addBracketAtTheEnd = true;
+						break;
+					case FOR:
+						outputWord = "for(";
+						addParanthesisAtTheEnd = true;
+						addBracketAtTheEnd = true;
+						break;
+					case WHILE:
+						outputWord = "while(";
+						addParanthesisAtTheEnd = true;
 						addBracketAtTheEnd = true;
 						break;
 					case PUBLIC:
@@ -475,8 +493,18 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						thisLineWasStatic = true;
 						outputWord = "static";
 						break;
-
-
+					case OR:
+						outputWord = "||";
+						break;
+					case AND:
+						outputWord = "&&";
+						break;
+					case PROGRAM:
+						outputWord = "int";
+						break;
+					case START:
+						addSemicolonAtTheEnd = false;
+						outputWord = "main(int argc, char* argv[]){";
 
 				}
 			}
@@ -484,13 +512,6 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 				addStarAfterThisWord = false;
 				outputWord += "*";
 			}
-			/*if(addStarBeforeThisWord){
-				addStarBeforeThisWord = false;
-				outputWord = "*" + outputWord;}
-			if(addStarBeforeNextWord){
-				addStarBeforeNextWord = false;
-				addStarBeforeThisWord = true;}
-			*/
 			out[i].push_back(outputWord);
 		}//END OF THE LINE TO PARSE
 
@@ -501,8 +522,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 			for(int staticIter = 0; staticIter <= staticMembers.currentMember; staticIter++){
 				LastWordOfOutputLine += "\n" + staticMembers.words[staticIter][0];}
 			currentClass = "~~~";
-			staticMembers.clear();
-		}
+			staticMembers.clear();}
 		if(thisLineWasStatic){
 			thisLineWasStatic = false;
 			staticMembers.addNewMember(out[i]);
@@ -510,10 +530,13 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 			out[i].push_back(staticMembers.processCurrentMember(currentClass));}
 		if(addParanthesisAtTheEnd){
 			addParanthesisAtTheEnd = false;
-			LastWordOfOutputLine += ")";}
+			LastWordOfOutputLine += " )";}
 		if(addBracketAtTheEnd){
 			addBracketAtTheEnd = false;
+			addSemicolonAtTheEnd = false;
 			LastWordOfOutputLine += "{";}
+		if(addSemicolonAtTheEnd && out[i].size() > 0){
+			LastWordOfOutputLine += ";";}
 
 	}//END OF THE WHOLE TEXT TO PARSE
 

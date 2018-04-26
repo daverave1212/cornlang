@@ -19,7 +19,6 @@ ofstream out("testcorn.txt");
 
 int main()
 {
-    START:
 
     Map<int> myMap;
     initMap(myMap);
