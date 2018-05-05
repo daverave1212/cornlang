@@ -1,21 +1,5 @@
 
-
-a[10][20 + 40][a[10].getSth()]
-
-a [ 10 ]
-
-finds [
-
-- goes back 
-- finds ) adds 1 on the ) stack
-- 
-
-go ( a [ 10 ] )
-
-
-
-
-automatically put a ; at the end of the line, no matter what
+[DONE] automatically put a ; at the end of the line, no matter what
 
 [DONE] import copy pastes code
 
@@ -30,26 +14,26 @@ automatically put a ; at the end of the line, no matter what
 
 [DONE] public		becomes public:
 [DONE] private		becomes private:
-static		records all line until it finds a word with no data in the tree
+[DONE] [FIXED!] static	ATTRIBUTES	records all line until it finds a word with no data in the tree
 
 	public static Object<Object> ob = new Object<Object>()
 	
 	public: static Object<Object> ob;
 	...
 	Object<Object> CLASS::ob = new Object<Object>();
-	
+[DONE] static METHODS
+
+for(int i = ceva1 : ceva2)
+for( INT i = ceva1; i <= ceva2; i++	)
 	
 
-<			if previous word was "template", append "class" to it
+[SKIPPED] if previous word was "template", append "class" to it
 
-function definitions:
-	
-
-
-	int myFunction()
+[SKIPPED]	function definitions:
+		int myFunction()
 	
 	
-Objects and pointers:
+[NEEDS TESTING] Objects and pointers:
 	Add a "*" after an object definition when:
 		If not function
 			At first occurence of an object, mark the line (NOT ARRAY OR MATRIX THOUGH)
@@ -63,13 +47,6 @@ Objects and pointers:
 				
 			
 			
-	
-class Object{....}
-
-Object o = new Object;							Object* o = new Object();
-Object<Object> o = new Object<Object>()			Object<Object*>* o = new Object<Object>();
-
-template<class T> static int myFunction(Object<Object> o, Object<Object<Object>> p)
 
 
 

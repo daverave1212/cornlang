@@ -252,27 +252,30 @@ class StaticMembers{public:
 		words.clear();
 		currentMember = -1;}
 
-	void addNewMember(std::vector<std::string> parsedLine){
+	void addNewMember(std::vector<std::string> &parsedLine){
 		words.push_back(parsedLine);
 		currentMember++;}
 
 
-	std::string processCurrentMember(std::string staticMemberParentClass){
+	std::string processCurrentMember(std::string staticMemberParentClass, int startIndex){
 		bool memberWasInitialized = false;
-		int indexOfEqual = words[currentMember].size() - 1;
-		int indexOfObject = indexOfEqual;
-		for(int i = 0; i<words[currentMember].size(); i++){
-			if(words[currentMember][i] == "="){
-				memberWasInitialized = true;
-				indexOfEqual = i;
-				indexOfObject = i - 1;
-				break;}}
+		int indexOfEqual = words[currentMember].size();
+		int indexOfObject = indexOfEqual - 1;
+
+		for(int i = 0; i<words[currentMember].size(); i++){	//
+			if(words[currentMember][i] == "="){				//
+				memberWasInitialized = true;				//
+				indexOfEqual = i;							// find indexOfObject, indexOfEqual
+				indexOfObject = i - 1;						//
+				break;}}									//
+
 		std::string returnedLine = "";
 		for(int i = 0; i<indexOfEqual; i++){
 			returnedLine += words[currentMember][i] + " ";}
 		returnedLine += ";";
+
 		std::string changeLine = ""; //changes the current line in this class. it will be appended after the class ends
-		for(int i = 0; i<words[currentMember].size(); i++){
+		for(int i = startIndex; i<words[currentMember].size(); i++){
 			if(i == indexOfObject){
 				changeLine += staticMemberParentClass + "::" + words[currentMember][indexOfObject] + " ";}
 			else{
@@ -281,6 +284,28 @@ class StaticMembers{public:
 		words[currentMember].push_back(changeLine);
 		return returnedLine;}
 };
+
+void parseForLine(std::vector<std::string> &parsedLine){
+	int colonIndex = -1;
+	int startIndex = 1;		//pentru ca porneste de la urmatorul cuvant dupa 'for'
+	int endIndex = parsedLine.size() -1;
+	for(int i = 0; i<parsedLine.size(); i++){
+		if(parsedLine[i] == ":"){
+			colonIndex = i;}}
+	if(colonIndex == -1) return;
+	if(parsedLine[1] == "("){
+		startIndex++;
+		endIndex--;
+	}
+	
+
+int i = ceva1 : ceva2
+i = ceva1 : ceva2
+
+
+for ( int i = ceva1 : ceva2 )
+for( INT i = ceva1; i <= ceva2; i++	)
+}
 
 std::string parseCode(std::string pathToFile, Map<int>& map){
 
@@ -303,8 +328,11 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 	bool isInTemplate			= false;
 	bool addStarAfterThisWord	= false;
 	int currentTemplateLevel	= 0;	//increases when finds <, decreases when finds >
+	int currentClassAndFunctionLevel = 0;
 	StaticMembers staticMembers	= StaticMembers();
-	bool thisLineWasStatic		= false;
+	int staticLineStartIndex = 0;
+	bool thisLineWasStaticAttribute	= false;
+	bool thisLineWasStaticMethod	= false;
 	bool thisLineWasEndOfClass	= false;
 
 	int nLinesInText = in.size();
@@ -445,6 +473,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						nextWordIsImportPath = true;
 						break;
 					case CLASS:
+						currentClassAndFunctionLevel++;
 						outputWord = inputWord;
 						addBracketAtTheEnd = true;
 						map.push(LastWordOfInputLine, CLASSNAME);
@@ -463,10 +492,16 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						break;
 					case BRACKET:
 						outputWord = "}";
-						thisLineWasEndOfClass = true;
+						currentClassAndFunctionLevel--;
+						if(currentClassAndFunctionLevel == 0){
+							thisLineWasEndOfClass = true;}
 						break;
 					case PRIMITIVE:
 						outputWord = inputWord;
+						break;
+					case DOES:
+						outputWord = "{";
+						currentClassAndFunctionLevel++;
 						break;
 					case IF:
 						outputWord = "if(";
@@ -490,7 +525,11 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						outputWord = "private:";
 						break;
 					case STATIC:
-						thisLineWasStatic = true;
+						if(LastWordOfInputLine == "does"){
+							thisLineWasStaticMethod = true;}
+						else{
+							staticLineStartIndex = j;
+							thisLineWasStaticAttribute = true;}
 						outputWord = "static";
 						break;
 					case OR:
@@ -523,11 +562,13 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 				LastWordOfOutputLine += "\n" + staticMembers.words[staticIter][0];}
 			currentClass = "~~~";
 			staticMembers.clear();}
-		if(thisLineWasStatic){
-			thisLineWasStatic = false;
+		if(thisLineWasStaticMethod){
+            thisLineWasStaticMethod = false;}
+		if(thisLineWasStaticAttribute){
+			thisLineWasStaticAttribute = false;
 			staticMembers.addNewMember(out[i]);
 			out[i].clear();
-			out[i].push_back(staticMembers.processCurrentMember(currentClass));}
+			out[i].push_back(staticMembers.processCurrentMember(currentClass, staticLineStartIndex));}
 		if(addParanthesisAtTheEnd){
 			addParanthesisAtTheEnd = false;
 			LastWordOfOutputLine += " )";}

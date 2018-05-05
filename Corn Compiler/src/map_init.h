@@ -27,7 +27,7 @@ void initMap(Map<int> &m){
 	m.push("static", STATIC);
 	m.push("and", AND);
 	m.push("or", OR);
-	
+
 	m.push("start", START);
 	m.push("program", PROGRAM);
 
