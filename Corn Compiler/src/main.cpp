@@ -13,44 +13,30 @@
 
 using namespace std;
 
-ofstream out("testcorn.txt");
-
-
-
-int main()
+int main(int argc, char* argv[])
 {
+	Map<int> myMap;
+	initMap(myMap);
 
-    Map<int> myMap;
-    initMap(myMap);
-    out << parseCode("TestCorn.corn", myMap);
-    //out << "crocodil";
-    return 0;
-    //return 0;
-    int x;
-    cin>>x;
-   // goto START;
-
-    Map<int> m;
-    m.create();
-    m.setNullElementTo(-1337);
-
-    m.push("Gica", 10);
-
-    cout<<"\n\n\n";
-    cout<<m.getData("Gicalau")<<" - Gicalau \n";
-    cout<<m.getData("Gic")<<" - Gic \n";
-    cout<<m.getData("Gi")<<" - Gi \n";
-    cout<<m.getData("G")<<" - G \n";
-
-    return 0;
-
-    m.push("doggo", 1337);
-    m.push("doggo", 420);
-    cout<<m.getData("dog")<<endl;
-    cout<<m.getData("doggo")<<endl;
+	if(argc < 3){
+		goto INTHISFOLDER;}
+	else{
+		ofstream outFullPath(argv[2]);
+		outFullPath << "#include <iostream>\n";
+		outFullPath << "#include <vector>\n";
+		outFullPath << "using namespace std;\n\n";
+		outFullPath << "#define print cout<<";
+		outFullPath << parseCode(argv[1], myMap);
+		return 0;
+	}
 
 
-
-    return 0;
+	INTHISFOLDER:
+		ofstream out("testcorn.txt");
+		out << "#include <iostream>\n";
+		out << "#include <vector>\n";
+		out << "#include <stdlib>\n";
+		out << parseCode("TestCorn.corn", myMap);
+		return 0;
 
 }

@@ -19,7 +19,7 @@
 #define OF			16
 
 #define START		100
-#define PROGRAM		101
+#define FINISH		101
 
 
 

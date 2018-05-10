@@ -403,7 +403,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 
 			if(isIgnoringEverything){
 				outputWord = inputWord;}
-			
+
 			// escaped word (~~)
 			else if(isStringEscaped(inputWord)){
 				outputWord = parseEscapedString(inputWord);}
@@ -512,7 +512,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						if(nextWord != "(" && code(nextWord) != CLASS){
 							outputWord += "*";}}}
 				check("@"){
-					if(inputWord[1] == "C"){
+					if(inputWord[2] == '+'){	//@C++
 						isIgnoringEverything = true;
 					}
 				}
@@ -599,12 +599,13 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 					case OF:
 						outputWord = "";
 						break;
-					case PROGRAM:
-						outputWord = "int";
-						break;
 					case START:
 						addSemicolonAtTheEnd = false;
-						outputWord = "main(int argc, char* argv[]){";
+						outputWord = "int main(int argc, char* argv[]){";
+						break;
+					case FINISH:
+						outputWord = "return 0;}";
+						break;
 
 				}
 			}
