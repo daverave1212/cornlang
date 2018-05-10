@@ -1,4 +1,45 @@
 
+All Changes and Documentation
+	
+	Overhauls:
+Automatically adds ";" when necessary (or rather when not unnecessary)
+int, bool, char, float and string are primitives
+ALL non-primitive objects are automatically pointers (Object o - Object* o)
+	This happens automatically in all situations
+Array of <string> myArray = new Array of <string>
+
+	Keywords:
+import - parses, then copy pastes all the generated code onto the source code from which it was called
+for	- automatically adds "("
+	- detects and transforms
+		for int X = Y:Z
+			into
+		for(int X = Y; X<=Z; X++){
+if - automatically adds "("
+while - automatically adds "("
+public	- public:
+private - private:
+static	- instantiates the object immediately after the class ends ("end")
+end		- }
+program	start	- int main(int argc, char** argv){
+program end		- return 0;}
+
+	Standard Library:
+String - 
+
+
+
+	Operators:
+;	- }
+.	- is replaced by -> or ::, intelligently
+[ and ]		- automatically replaced by the elem(array, index) function
+			- array[i] is replaced by elem(array, i)
+			
+
+
+
+
+_____________________________________________________________________________________
 [DONE] automatically put a ; at the end of the line, no matter what
 
 [DONE] import copy pastes code
@@ -15,12 +56,6 @@
 [DONE] public		becomes public:
 [DONE] private		becomes private:
 [DONE] [FIXED!] static	ATTRIBUTES	records all line until it finds a word with no data in the tree
-
-	public static Object<Object> ob = new Object<Object>()
-	
-	public: static Object<Object> ob;
-	...
-	Object<Object> CLASS::ob = new Object<Object>();
 [DONE] static METHODS
 
 for(int i = ceva1 : ceva2)

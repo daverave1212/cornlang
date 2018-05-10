@@ -13,6 +13,7 @@
 #define print std::cout<<
 #define read  std::cin>>
 
+#define StringVector std::vector<std::string>
 #define newEmptyStringVector std::vector<std::string>(0)
 #define StringMatrix std::vector<std::vector<std::string>>
 
@@ -25,6 +26,10 @@
 #define FirstLetterOf(x) x[0]
 
 #define check(x) else if(inputWord == x)
+
+void appendStringVector(StringVector &base, StringVector &appendix){
+	for(int i = 0; i<appendix.size(); i++){
+		base.push_back(appendix[i]);}}
 
 void printArray(std::vector<std::string> v){
 	std::cout<<"\n";
@@ -86,7 +91,7 @@ inline bool isSpaceOrTab(char c){
     if(c == ' ' || c == '\t') return true;
     else return false;}
 
-std::string singleOperatorCharacters = "()[]{};,.";
+std::string singleOperatorCharacters = "()[]{};,.:";
 inline bool isSingleOperator(char c){
     if(singleOperatorCharacters.find(c) != std::string::npos){
         return true;}
@@ -123,7 +128,24 @@ inline bool isStringOperator(std::string s){
 inline bool isQuote(char c){
 	if(c == QUOTECHARACTER){
 		return true;}
-	else return false;
+	else return false;}
+
+inline bool isStringEscaped(std::string s){
+	print "\t\tCHECKING STRING ESCAPED ";
+	print s;
+	print "\n";
+	if(s.length() < 2) return false;
+	if(s[0] == '~' && s[1] == '~'){
+		print "\t\t\tOBVIOUSLY ESCAPED NOOB LOL\n";
+		return true;}
+	else return false;}
+
+
+inline std::string parseEscapedString(std::string s){
+	print "\t\t THIS IS... A SPECIAL REQUEST";
+	print s.substr(2, s.length() - 2);
+	print "\n";
+	return s.substr(2, s.length() - 2);
 }
 
 void splitStringIntoWords(std::string &s, std::vector<std::string>& v){
@@ -286,26 +308,56 @@ class StaticMembers{public:
 };
 
 void parseForLine(std::vector<std::string> &parsedLine){
+	print "CALLING FOR";
 	int colonIndex = -1;
+	int equalIndex = 0;
 	int startIndex = 1;		//pentru ca porneste de la urmatorul cuvant dupa 'for'
 	int endIndex = parsedLine.size() -1;
+	bool isLookingForEquals = true;	//only looks for the first equals
+	bool userPutInt = false;
 	for(int i = 0; i<parsedLine.size(); i++){
 		if(parsedLine[i] == ":"){
-			colonIndex = i;}}
+			colonIndex = i;}
+		else if(parsedLine[i] == "=" && isLookingForEquals){
+			equalIndex = i;
+			isLookingForEquals = false;}}
 	if(colonIndex == -1) return;
 	if(parsedLine[1] == "("){
 		startIndex++;
 		endIndex--;
-	}
-	
+		if(parsedLine[2] == "int"){
+			startIndex++;
+			userPutInt = true;}}
+	else if (parsedLine[1] == "int"){
+		startIndex++;
+		userPutInt = true;}
 
-int i = ceva1 : ceva2
-i = ceva1 : ceva2
-
-
-for ( int i = ceva1 : ceva2 )
-for( INT i = ceva1; i <= ceva2; i++	)
-}
+	StringVector beforeEquals(0);
+	StringVector afterEquals(0);
+	StringVector afterColon(0);
+	for(int i = startIndex; i<equalIndex; i++){
+		beforeEquals.push_back(parsedLine[i]);}
+	for(int i = equalIndex + 1; i<colonIndex; i++){
+		afterEquals.push_back(parsedLine[i]);}
+	for(int i = colonIndex + 1; i<=endIndex; i++){
+		afterColon.push_back(parsedLine[i]);}
+	StringVector finalLine(0);
+	finalLine.push_back("for");
+	finalLine.push_back("(");
+	if(!userPutInt){
+		finalLine.push_back("int");}
+	appendStringVector(finalLine, beforeEquals);
+	finalLine.push_back("=");
+	appendStringVector(finalLine, afterEquals);
+	finalLine.push_back("~~;");		//escapes the ; so it doesnt take it as 'end'
+	appendStringVector(finalLine, beforeEquals);
+	finalLine.push_back("<=");
+	appendStringVector(finalLine, afterColon);
+	finalLine.push_back("~~;");
+	appendStringVector(finalLine, beforeEquals);
+	finalLine.push_back("++");
+	finalLine.push_back(")");
+	parsedLine = finalLine;}
 
 std::string parseCode(std::string pathToFile, Map<int>& map){
 
@@ -334,6 +386,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 	bool thisLineWasStaticAttribute	= false;
 	bool thisLineWasStaticMethod	= false;
 	bool thisLineWasEndOfClass	= false;
+	bool isIgnoringEverything = false;
 
 	int nLinesInText = in.size();
 	for(int i = 0; i<nLinesInText; i++){
@@ -348,8 +401,15 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 			std::string outputWord = "";
 			//CODE FOR INTERPRETING WORDS IS HERE
 
+			if(isIgnoringEverything){
+				outputWord = inputWord;}
+			
+			// escaped word (~~)
+			else if(isStringEscaped(inputWord)){
+				outputWord = parseEscapedString(inputWord);}
+
 			// "standard.corn"
-			if(nextWordIsImportPath){
+			else if(nextWordIsImportPath){
 				nextWordIsImportPath = false;
 				inputWord = inputWord.substr(1, inputWord.length() - 2);
 				outputWord = parseCode(inputWord, map);}
@@ -433,11 +493,9 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						insertInArrayBeforePosition(kLine, "(", startGetIndex);
 						printArray(kLine);
 						insertInArrayBeforePosition(kLine, "elem", startGetIndex);
-						printArray(kLine);
-						}
+						printArray(kLine);}
 					in[i] = kLine;
-					printArray(in[i]);
-					}
+					printArray(in[i]);}
 				check("]"){
 					outputWord = ")";}
 				check("<"){
@@ -452,12 +510,12 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						if(currentTemplateLevel == 0){
 							isInTemplate = false;}
 						if(nextWord != "(" && code(nextWord) != CLASS){
-							outputWord += "*";}
-
-
-						// Object <...   >*    ob
-							}
+							outputWord += "*";}}}
+				check("@"){
+					if(inputWord[1] == "C"){
+						isIgnoringEverything = true;
 					}
+				}
 				else{
 					outputWord = inputWord;}
 			}
@@ -509,9 +567,9 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						addBracketAtTheEnd = true;
 						break;
 					case FOR:
-						outputWord = "for(";
-						addParanthesisAtTheEnd = true;
+						outputWord = "for";
 						addBracketAtTheEnd = true;
+						parseForLine(in[i]);
 						break;
 					case WHILE:
 						outputWord = "while(";
@@ -537,6 +595,9 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						break;
 					case AND:
 						outputWord = "&&";
+						break;
+					case OF:
+						outputWord = "";
 						break;
 					case PROGRAM:
 						outputWord = "int";
