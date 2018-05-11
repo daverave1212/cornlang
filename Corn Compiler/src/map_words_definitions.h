@@ -17,6 +17,7 @@
 #define AND			14
 #define OR			15
 #define OF			16
+#define EXTENDS		21
 
 #define START		100
 #define FINISH		101

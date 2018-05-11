@@ -22,8 +22,10 @@
 #define FirstLetterIsNumber(x) ( x[0] >= 48 && x[0] <= 57 )
 #define LastWordOfInputLine in[i][nWordsInLine - 1]
 #define LastWordOfOutputLine out[i][out[i].size() - 1]
+#define PreviousLastWordOfInputLine in[i][nWordsInLine - 2]
 #define code(x) map.getData(x)
 #define FirstLetterOf(x) x[0]
+#define IsThisWordLastWordOfLine j == in[i].size() - 1
 
 #define check(x) else if(inputWord == x)
 
@@ -386,6 +388,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 	bool thisLineWasStaticAttribute	= false;
 	bool thisLineWasStaticMethod	= false;
 	bool thisLineWasEndOfClass	= false;
+	bool thisLineWasClassDefinition = false;
 	bool isIgnoringEverything = false;
 
 	int nLinesInText = in.size();
@@ -516,6 +519,15 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						isIgnoringEverything = true;
 					}
 				}
+				check(":"){		//NEEDS TESTING
+					if(IsThisWordLastWordOfLine){				//class Object:
+						if(thisLineWasClassDefinition){
+							outputWord = "{";}
+						else{									//void aFunction():
+							outputWord = "{";
+							currentClassAndFunctionLevel++;}}
+					else outputWord = inputWord;
+				}
 				else{
 					outputWord = inputWord;}
 			}
@@ -533,20 +545,38 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 					case CLASS:
 						currentClassAndFunctionLevel++;
 						outputWord = inputWord;
-						addBracketAtTheEnd = true;
-						map.push(LastWordOfInputLine, CLASSNAME);
-						currentClass = LastWordOfInputLine;
+						map.push(nextWord, CLASSNAME);
+						currentClass = nextWord;
+						thisLineWasClassDefinition = true;
 						break;
 					case CLASSNAME:
 						outputWord = inputWord;
 						/* adding pointers */
+						/* VARIANT WITH 'of' keyword: allows both Array<x> a, and Array of <x> a */
+						if( previousWord == "extends" ){
+							//class Something extends ~~Object~~ :
+						} else {
+							if( nextWord == "of"){
+								isInTemplate = true;}
+							else if( isStringOperator(nextWord) ){	//probably Object < | Object > | Object , | new Object()
+								if(nextWord == "<"){//the * is put above, at '//an OPERATOR' at '>'
+									isInTemplate = true;}
+								if(nextWord == ">" || nextWord == ","){
+									addStarAfterThisWord = true;}}
+							else if( code(nextWord) == NOT_FOUND ){ //probably Object ob
+								addStarAfterThisWord = true;}						
+						}
+						/* VARIANT WITHOHUT 'of' keyword: Array<x> a = new Array<x>()
 						if( isStringOperator(nextWord) ){	//probably Object < | Object > | Object , | new Object()
 							if(nextWord == "<"){//the * is put above, at '//an OPERATOR' at '>'
 								isInTemplate = true;}
 							if(nextWord == ">" || nextWord == ","){
 								addStarAfterThisWord = true;}}
 						else if( code(nextWord) == NOT_FOUND ){ //probably Object ob
-							addStarAfterThisWord = true;}
+							addStarAfterThisWord = true;} */
+						break;
+					case EXTENDS:
+						outputWord = ": public";
 						break;
 					case BRACKET:
 						outputWord = "}";
@@ -640,6 +670,8 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 			LastWordOfOutputLine += "{";}
 		if(addSemicolonAtTheEnd && out[i].size() > 0){
 			LastWordOfOutputLine += ";";}
+		if(thisLineWasClassDefinition){
+			thisLineWasClassDefinition = false;}
 
 	}//END OF THE WHOLE TEXT TO PARSE
 

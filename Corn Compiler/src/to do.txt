@@ -6,7 +6,9 @@ Automatically adds ";" when necessary (or rather when not unnecessary)
 int, bool, char, float and string are primitives
 ALL non-primitive objects are automatically pointers (Object o - Object* o)
 	This happens automatically in all situations
-Array of <string> myArray = new Array of <string>
+	
+	Syntax
+Array of <string> myArray = new Array of <string>()
 
 	Keywords:
 import - parses, then copy pastes all the generated code onto the source code from which it was called

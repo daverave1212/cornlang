@@ -28,6 +28,7 @@ void initMap(Map<int> &m){
 	m.push("and", AND);
 	m.push("or", OR);
 	m.push("of", OF);
+	m.push("extends", EXTENDS);
 	
 	m.push("Array", CLASSNAME);
 	m.push("Matrix", CLASSNAME);
