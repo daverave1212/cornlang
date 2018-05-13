@@ -30,8 +30,11 @@ void initMap(Map<int> &m){
 	m.push("of", OF);
 	m.push("extends", EXTENDS);
 	
+	m.push("print", PRINT);
+	
 	m.push("Array", CLASSNAME);
 	m.push("Matrix", CLASSNAME);
+	m.push("File", CLASSNAME);
 
 	m.push("start", START);
 	m.push("finish", FINISH);

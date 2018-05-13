@@ -24,8 +24,10 @@ int main(int argc, char* argv[])
 		ofstream outFullPath(argv[2]);
 		outFullPath << "#include <iostream>\n";
 		outFullPath << "#include <vector>\n";
-		outFullPath << "using namespace std;\n\n";
-		outFullPath << "#define print cout<<";
+		outFullPath << "#include <windows.h>\n";
+		outFullPath << "#include \"standard_corn.h\"\n";
+		outFullPath << "CornStream cornStream;\n";
+		outFullPath << "\n";
 		outFullPath << parseCode(argv[1], myMap);
 		return 0;
 	}
@@ -35,7 +37,9 @@ int main(int argc, char* argv[])
 		ofstream out("testcorn.txt");
 		out << "#include <iostream>\n";
 		out << "#include <vector>\n";
-		out << "#include <stdlib>\n";
+		out << "#include <windows.h>\n";
+		out << "#include \"standard_corn.h\"\n";
+		out << "CornStream cornStream;\n\n";
 		out << parseCode("TestCorn.corn", myMap);
 		return 0;
 

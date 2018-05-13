@@ -1,3 +1,21 @@
+	Installer Instructions
+It will install here
+Creates all files and folders in the previous folders. Calls it Corn.
+Checks for g++.
+If it doesn't exist, creates a C++ Compiler folder.
+Puts MinGW there.
+Sets path for the c++ compiler.
+Copies corn compiler
+Copies standard lib
+Copies the Corn Project
+Adds corn to the command line
+	
+
+
+
+
+
+
 
 All Changes and Documentation
 	

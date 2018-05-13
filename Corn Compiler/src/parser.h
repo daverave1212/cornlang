@@ -107,7 +107,7 @@ inline bool isDoubleOperator(char c){
     else return false;
 }
 
-std::string operatorCharacters = "()[]{};,.!%&*|=-+<>";
+std::string operatorCharacters = "()[]{};:,.!%&*|=-+<>";
 inline bool isCharOperator(char c){
     if(operatorCharacters.find(c) != std::string::npos){
         return true;}
@@ -373,6 +373,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 	bool isWritingString = false;
 
 	out.reserve(in.size());	//this doesn't do anything, it just reserves so it runs faster!
+	int nLinesInText = in.size();
 
 	//Control Variables:
 	bool nextWordIsImportPath 	= false;
@@ -384,20 +385,25 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 	int currentTemplateLevel	= 0;	//increases when finds <, decreases when finds >
 	int currentClassAndFunctionLevel = 0;
 	StaticMembers staticMembers	= StaticMembers();
-	int staticLineStartIndex = 0;
+	int staticLineStartIndex 	= 0;
 	bool thisLineWasStaticAttribute	= false;
 	bool thisLineWasStaticMethod	= false;
 	bool thisLineWasEndOfClass	= false;
 	bool thisLineWasClassDefinition = false;
-	bool isIgnoringEverything = false;
+	bool isIgnoringEverything	= false;
+	int indentationLevel		= 0;
+	int extraIndentationLevel 	= 0;
+	std::vector<int> indentations	= std::vector<int>(nLinesInText);
 
-	int nLinesInText = in.size();
+
 	for(int i = 0; i<nLinesInText; i++){
 		out.push_back( newEmptyStringVector );
 		int nWordsInLine = in[i].size();
 		out[i].reserve( nWordsInLine ); //same here. if we remove the 2 lines, it works still
 
-		bool addSemicolonAtTheEnd = true;
+		bool addSemicolonAtTheEnd	= true;
+		indentationLevel += extraIndentationLevel;
+		extraIndentationLevel = 0;
 
 		for(int j = 0; j<in[i].size(); j++){
 			std::string inputWord = in[i][j];
@@ -423,8 +429,11 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 
 			// an OPERATOR
 			else if(isStringOperator(inputWord)){	// + - = \ ...
+				print inputWord;
+				print "\n";
 				if(inputWord == ""){}
 				check(";"){
+					extraIndentationLevel--;
 					addSemicolonAtTheEnd = false;
 					outputWord = ";}";}
 				check("."){
@@ -521,14 +530,22 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 				}
 				check(":"){		//NEEDS TESTING
 					if(IsThisWordLastWordOfLine){				//class Object:
-						if(thisLineWasClassDefinition){
+						extraIndentationLevel++;
+						if(previousWord == "start"){
+							outputWord = "";}
+						else if(thisLineWasClassDefinition){
 							outputWord = "{";}
 						else{									//void aFunction():
 							outputWord = "{";
 							currentClassAndFunctionLevel++;}}
-					else outputWord = inputWord;
-				}
+					else {
+						outputWord = inputWord;
+						outputWord += "~~~~~~~";
+					}}
 				else{
+				    print "FOUND AN OPERATOR WE DEFINITELY DON'T KNOW. It's '";
+                    print inputWord;
+                    print "'\n";
 					outputWord = inputWord;}
 			}
 			// a WORD...
@@ -553,32 +570,24 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						outputWord = inputWord;
 						/* adding pointers */
 						/* VARIANT WITH 'of' keyword: allows both Array<x> a, and Array of <x> a */
-						if( previousWord == "extends" ){
-							//class Something extends ~~Object~~ :
+						if( previousWord == "extends" ){			//class Something extends ~~Object~~ :
+							//doNothing()
 						} else {
 							if( nextWord == "of"){
 								isInTemplate = true;}
-							else if( isStringOperator(nextWord) ){	//probably Object < | Object > | Object , | new Object()
-								if(nextWord == "<"){//the * is put above, at '//an OPERATOR' at '>'
+							else if( isStringOperator(nextWord) ){	//probably Object < | Object > | Object , | Object . | new Object() | (Object) o
+								if(nextWord == "<"){				//the * is put above, at '//an OPERATOR' at '>'
 									isInTemplate = true;}
-								if(nextWord == ">" || nextWord == ","){
+								else if(nextWord == ">" || nextWord == "," || nextWord == ")"){
 									addStarAfterThisWord = true;}}
-							else if( code(nextWord) == NOT_FOUND ){ //probably Object ob
-								addStarAfterThisWord = true;}						
-						}
-						/* VARIANT WITHOHUT 'of' keyword: Array<x> a = new Array<x>()
-						if( isStringOperator(nextWord) ){	//probably Object < | Object > | Object , | new Object()
-							if(nextWord == "<"){//the * is put above, at '//an OPERATOR' at '>'
-								isInTemplate = true;}
-							if(nextWord == ">" || nextWord == ","){
+							else{									//probably Object ob
 								addStarAfterThisWord = true;}}
-						else if( code(nextWord) == NOT_FOUND ){ //probably Object ob
-							addStarAfterThisWord = true;} */
 						break;
 					case EXTENDS:
 						outputWord = ": public";
 						break;
 					case BRACKET:
+						extraIndentationLevel--;
 						outputWord = "}";
 						currentClassAndFunctionLevel--;
 						if(currentClassAndFunctionLevel == 0){
@@ -613,7 +622,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						outputWord = "private:";
 						break;
 					case STATIC:
-						if(LastWordOfInputLine == "does"){
+						if(LastWordOfInputLine == "does" || LastWordOfInputLine == ":"){
 							thisLineWasStaticMethod = true;}
 						else{
 							staticLineStartIndex = j;
@@ -632,20 +641,22 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 					case START:
 						addSemicolonAtTheEnd = false;
 						outputWord = "int main(int argc, char* argv[]){";
+						outputWord+= "srand(time(NULL));\n";
 						break;
 					case FINISH:
 						outputWord = "return 0;}";
+						break;
+					case PRINT:
+						outputWord = ";cornStream<<";
 						break;
 
 				}
 			}
 			if(addStarAfterThisWord){
 				addStarAfterThisWord = false;
-				outputWord += "*";
-			}
+				outputWord += "*";}
 			out[i].push_back(outputWord);
-		}//END OF THE LINE TO PARSE
-
+		}//END OF THE LINE TO PARSE, ADDING APPENDAGES AND POSTPROCESSING
 
 		// adding Brackets, Colons, etc
 		if(thisLineWasEndOfClass){
@@ -672,16 +683,22 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 			LastWordOfOutputLine += ";";}
 		if(thisLineWasClassDefinition){
 			thisLineWasClassDefinition = false;}
+		indentations[i] = indentationLevel;
 
 	}//END OF THE WHOLE TEXT TO PARSE
 
 
-	//formatting returned string (only for aesthetics, doesn't change anything)
+	// formatting returned string (only for aesthetics, doesn't change anything)
+	// NO PARSING HERE, EVER
 	std::string returnedString = "";
 	for(int i = 0; i<out.size(); i++){
+		if(out[i].size() > 0){
+			std::string tabs = "";
+			for(int tabIndex = 1; tabIndex<=indentations[i]; tabIndex++){
+				tabs += "\t";}
+			out[i][0] = tabs + out[i][0];}
 		for(int j = 0; j<out[i].size(); j++){
-			returnedString += out[i][j] + " ";
-		}
+			returnedString += out[i][j] + " ";}
 		returnedString += "\n";
 	}
 
