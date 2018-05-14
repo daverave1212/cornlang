@@ -1,0 +1,43 @@
+
+
+WHERE g++
+IF %ERRORLEVEL% NEQ 0 goto FinishFailCpp
+echo C++ Compiler was successfully installed.
+goto InstallCorn
+
+:InstallCorn
+echo C++ Compiler MinGW is installed.
+echo Corn Compiler will now be installed.
+pause
+echo Installing Corn compiler...
+setx PATH "%PATH%;%~dp0Corn Compiler"
+
+WHERE corn test
+IF %ERRORLEVEL% NEQ 0 goto FinishFailCorn
+
+:Finish
+echo Corn successfully installed!
+pause
+EXIT /B
+
+:FinishFailCpp
+echo There was a problem installing the C++ Compiler.
+echo Program will now exit.
+pause
+EXIT /B
+
+:FinishFailCorn
+echo There was a problem installing the Corn compiler.
+echo Program will now exit.
+pause
+EXIT /B
+
+rem setx PATH "%PATH%;%~dp0 C++ Compiler\MinGW\bin"
+rem setx PATH "%PATH%;%~dp0Corn Compiler"
+
+rem C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Skype\Phone\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;C:\Users\Ghavao\.dnx\bin;C:\Program Fil es\Microsoft DNX\Dnvm\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\; C:\Program Files (x86)\CodeBlocks\MinGW\bin; C:\Program Files\Java\jdk1.8.0_151\bin; C:\Program Files\Java\jre1.8.0_151\bin;C:\Program Files\nodejs\;C:\HaxeToolkit\haxe\;C:\HaxeToolkit\neko;C:\Program Files\Git\cmd;C:\Program Files\xd;E:\Go\bin;E:\Lisp;C:\Program Files (x86)\CodeBlocks\MinGW\bin;C:\Program Files (x86)\GtkSharp\2.12\bin;C:\Program Files\dotnet\;C:\ProgramData\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Skype\Phone\;C:\Progra
+rem C:\ProgramData\Oracle\Java\javapath;%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;C:\Program Files (x86)\Skype\Phone\;C:\Program Files\Microsoft SQL Server\130\Tools\Binn\;%USERPROFILE%\.dnx\bin;C:\Program Fil es\Microsoft DNX\Dnvm\;C:\Program Files\Microsoft SQL Server\120\Tools\Binn\; C:\Program Files (x86)\CodeBlocks\MinGW\bin; C:\Program Files\Java\jdk1.8.0_151\bin; C:\Program Files\Java\jre1.8.0_151\bin;C:\Program Files\nodejs\;%HAXEPATH%;%NEKO_INSTPATH%;C:\Program Files\Git\cmd;C:\Program Files\xd;E:\Go\bin;E:\Lisp;C:\Program Files (x86)\CodeBlocks\MinGW\bin;C:\Program Files (x86)\GtkSharp\2.12\bin;C:\Program Files\dotnet\
+rem C:\ProgramData\Oracle\Java\javapath;
+rem C:\ProgramData\Oracle\Java\javapath;%SystemRoot%\system32;%SystemRoot%;%SystemRoot%\System32\Wbem;%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\;
+
+

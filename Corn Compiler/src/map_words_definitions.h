@@ -20,6 +20,7 @@
 #define EXTENDS		20
 
 #define PRINT		30
+#define READ		31
 
 #define START		100
 #define FINISH		101

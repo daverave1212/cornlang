@@ -31,6 +31,7 @@ void initMap(Map<int> &m){
 	m.push("extends", EXTENDS);
 	
 	m.push("print", PRINT);
+	m.push("read", READ);
 	
 	m.push("Array", CLASSNAME);
 	m.push("Matrix", CLASSNAME);

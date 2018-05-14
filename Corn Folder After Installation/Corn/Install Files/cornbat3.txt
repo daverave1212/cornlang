@@ -1,0 +1,10 @@
+Corn Compiler\CornCompiler.exe" "%cd%\%1" "%cd%\C++ Source Code\main.cpp"
+g++ "%cd%\C++ Source Code\main.cpp" -o "%cd%\Binaries\%2"
+
+:fin
+if "%3"=="-r" goto ArgumentRun
+echo Done!
+
+:ArgumentRun
+start /WAIT "" "%cd%\Binaries\%2.exe"
+echo Done!

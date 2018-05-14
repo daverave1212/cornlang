@@ -1,0 +1,9 @@
+@echo off
+if "%1"=="c" goto cr
+if "%1"=="create" goto cr
+if "%1"=="test" goto test
+goto compile
+
+:cr
+:create
+xcopy /s "

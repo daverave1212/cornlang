@@ -17,6 +17,7 @@ int main(int argc, char* argv[])
 {
 	Map<int> myMap;
 	initMap(myMap);
+	int x;
 
 	if(argc < 3){
 		goto INTHISFOLDER;}
@@ -25,6 +26,7 @@ int main(int argc, char* argv[])
 		outFullPath << "#include <iostream>\n";
 		outFullPath << "#include <vector>\n";
 		outFullPath << "#include <windows.h>\n";
+		outFullPath << "#include <time.h>\n";
 		outFullPath << "#include \"standard_corn.h\"\n";
 		outFullPath << "CornStream cornStream;\n";
 		outFullPath << "\n";

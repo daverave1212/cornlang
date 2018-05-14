@@ -346,8 +346,7 @@ void parseForLine(std::vector<std::string> &parsedLine){
 	StringVector finalLine(0);
 	finalLine.push_back("for");
 	finalLine.push_back("(");
-	if(!userPutInt){
-		finalLine.push_back("int");}
+	finalLine.push_back("int");
 	appendStringVector(finalLine, beforeEquals);
 	finalLine.push_back("=");
 	appendStringVector(finalLine, afterEquals);
@@ -648,6 +647,9 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						break;
 					case PRINT:
 						outputWord = ";cornStream<<";
+						break;
+					case READ:
+						outputWord = ";cin>>";
 						break;
 
 				}

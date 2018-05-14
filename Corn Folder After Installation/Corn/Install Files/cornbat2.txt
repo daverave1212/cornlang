@@ -1,0 +1,8 @@
+Project Template" "%cd%\%2\"
+if not exist "%cd%\%2\Binaries\" mkdir "%cd%\%2\Binaries\"
+if not exist "%cd%\%2\C++ Source Code\" mkdir "%cd%\%2\C++ Source Code\"
+goto fin
+
+:compile
+echo "Compiling .corn"
+start /WAIT "" "

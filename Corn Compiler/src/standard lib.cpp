@@ -219,15 +219,21 @@ string substringFromPosition(string s, int startIndex){
 //-------------------------------- Print --------------------------------
 class CornStream{public:
 
+	friend CornStream &operator<<(CornStream& cornStream, char* s);
 	friend CornStream &operator<<(CornStream& cornStream, string s);
 	friend CornStream &operator<<(CornStream& cornStream, int s);
 	friend CornStream &operator<<(CornStream& cornStream, float s);
-	friend CornStream &operator<<(CornStream& cornStream, bool s);
+	//friend CornStream &operator<<(CornStream& cornStream, bool s);
 	friend CornStream &operator<<(CornStream& cornStream, char s);
 	template <class T> friend CornStream &operator<<(CornStream& cornStream, Array<T>* a);
 	template <class T> friend CornStream &operator<<(CornStream& cornStream, Matrix<T>* a);
 
 };
+
+CornStream &operator<<(CornStream& cornStream, char* s){
+	cout<<s;
+	return cornStream;}
+
 
 CornStream &operator<<(CornStream& cornStream, string s){
 	cout<<s;
@@ -237,9 +243,10 @@ CornStream &operator<<(CornStream& cornStream, int s){
 	cout<<s;
 	return cornStream;}
 
-CornStream &operator<<(CornStream& cornStream, float s){
+/*CornStream &operator<<(CornStream& cornStream, float s){
 	cout<<s;
 	return cornStream;}
+*/
 
 CornStream &operator<<(CornStream& cornStream, bool s){
 	if(s == true) cout<<"true";

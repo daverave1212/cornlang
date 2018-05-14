@@ -5,6 +5,7 @@
 #include <vector>
 #include <stdlib.h>
 #include <fstream>
+#include <sstream>
 
 using namespace std;
 
@@ -39,24 +40,34 @@ template <class T> string typeOf(T t){
     return "unknown";}
 //-------------------------------- toString() ---------------------------------
 
+string toString(int i){
+    stringstream ss;
+    ss << i;
+    return ss.str();}
+
+string toString(bool i){
+    if(i == true) return "true";
+	return "false";}
+
 string toString(string s){
     return s;}
 
-string toString(int i){
-    return "" + i;}
+string toString(float i){
+    stringstream ss;
+    ss << i;
+    return ss.str();}
 
-string toString(bool b){
-    return "" + b;}
-
-string toString(float f){
-    return (int)f + "";}
-
-string toString(char c){
-    return "" + c;}
+string toString(char i){
+    stringstream ss;
+    ss << i;
+    return ss.str();}
 
 string toString(Object* o){
-    cout << "OY";
-    if(o == NULL) return "NULL";
+    cout << "OYdasda";
+    if(o == NULL){
+		cout<<"NULLm8    ";
+		return "NULL";}
+	cout<< "Not NUll    ";
     return o->asString();}
 
 template <class T> string toString(T t){
@@ -86,8 +97,9 @@ template <class T> class Array : public Object{public:
 
     string asString(){
         string returnedString = "";
-        cout<<"Definitely here.";
         for(int i = 0; i<length; i++){
+			cout<<typeOf(v[i]);
+			cout<<endl;
             returnedString += toString(v[i]) + " ";}
         return returnedString;}
 
@@ -131,14 +143,14 @@ template <class T> class Matrix : public Object{public:
 
 	int nRows = 0;
 	int nCols = 0;
-	Array<Array<T>*>* matrix;
+	Array<Array<T>* >* matrix;
 	T t;
 
 	Matrix(){}
 	Matrix(int r, int c){
 		nRows = r;
 		nCols = c;
-		matrix = new Array<Array<T>>(r);
+		matrix = new Array< Array<T> >(r);
 		for(int i = 0; i<r; i++){
 			matrix->v[i] = new Array<T>(c);
 		}
@@ -161,18 +173,20 @@ template <class T> class Matrix : public Object{public:
 	}
 
 
-
 };
 
 
-//-------------------------------- ARRAYS AND STRINGS ---------------------------------
-template <class T> T elem(Array<T>* a, int index){
+//-------------------------------- ARRAYS AND STRINGS elemmm ---------------------------------
+template <class T> T& elem(Array<T>* a, int index){
+	cout << "Called for Array<T>*";
     return a->v[index - 1];}
 
 template <class T> Array<T>* elem(Matrix<T>* m, int index){
+	cout << "Called for MAtrix<T>*";
 	return m->matrix->at(index);}
 
-char elem(string s, int index){
+char& elem(string s, int index){
+	cout << "Called for char";
     return s[index - 1];}
 
 //-------------------------------- String API / Some Array API --------------------------------
@@ -245,15 +259,20 @@ string substringFromPosition(string s, int startIndex){
 //-------------------------------- Print --------------------------------
 class CornStream{public:
 
+	friend CornStream &operator<<(CornStream& cornStream, char* s);
 	friend CornStream &operator<<(CornStream& cornStream, string s);
 	friend CornStream &operator<<(CornStream& cornStream, int s);
 	friend CornStream &operator<<(CornStream& cornStream, float s);
-	friend CornStream &operator<<(CornStream& cornStream, bool s);
+	//friend CornStream &operator<<(CornStream& cornStream, bool s);
 	friend CornStream &operator<<(CornStream& cornStream, char s);
 	template <class T> friend CornStream &operator<<(CornStream& cornStream, Array<T>* a);
 	template <class T> friend CornStream &operator<<(CornStream& cornStream, Matrix<T>* a);
 
 };
+
+CornStream &operator<<(CornStream& cornStream, char* s){
+	cout<<s;
+	return cornStream;}
 
 CornStream &operator<<(CornStream& cornStream, string s){
 	cout<<s;
@@ -267,10 +286,11 @@ CornStream &operator<<(CornStream& cornStream, float s){
 	cout<<s;
 	return cornStream;}
 
-CornStream &operator<<(CornStream& cornStream, bool s){
+/*CornStream &operator<<(CornStream& cornStream, bool s){
 	if(s == true) cout<<"true";
 	else cout<<"false";
 	return cornStream;}
+	*/
 
 CornStream &operator<<(CornStream& cornStream, char s){
 	cout<<s;
@@ -278,6 +298,7 @@ CornStream &operator<<(CornStream& cornStream, char s){
 
 
 template <class T> CornStream &operator<<(CornStream& cornStream, Array<T>* a){
+	cout<<"Printing for array\n";
 	cout<<a->asString();
 	return cornStream;}
 
