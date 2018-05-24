@@ -18,6 +18,7 @@ void initMap(Map<int> &m){
 	m.push("float", PRIMITIVE);
 	m.push("string", PRIMITIVE);
 	m.push("if", IF);
+	m.push("else", ELSE);
 	m.push("does", DOES);
 	m.push("while", WHILE);
 	m.push("for", FOR);

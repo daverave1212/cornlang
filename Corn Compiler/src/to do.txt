@@ -1,21 +1,3 @@
-	Installer Instructions
-It will install here
-Creates all files and folders in the previous folders. Calls it Corn.
-Checks for g++.
-If it doesn't exist, creates a C++ Compiler folder.
-Puts MinGW there.
-Sets path for the c++ compiler.
-Copies corn compiler
-Copies standard lib
-Copies the Corn Project
-Adds corn to the command line
-	
-
-
-
-
-
-
 
 All Changes and Documentation
 	
@@ -24,6 +6,9 @@ Automatically adds ";" when necessary (or rather when not unnecessary)
 int, bool, char, float and string are primitives
 ALL non-primitive objects are automatically pointers (Object o - Object* o)
 	This happens automatically in all situations
+	
+	Classes
+All clases have a getType() by default
 	
 	Syntax
 Array of <string> myArray = new Array of <string>()
@@ -54,7 +39,8 @@ String -
 .	- is replaced by -> or ::, intelligently
 [ and ]		- automatically replaced by the elem(array, index) function
 			- array[i] is replaced by elem(array, i)
-			
+:	- takes the place of '{'
+	- optional for if/while/for
 
 
 

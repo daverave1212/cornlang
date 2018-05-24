@@ -15,7 +15,7 @@ goto fin
 echo Compiling .corn
 start /WAIT "" "D:\Corn\Corn Compiler\CornCompiler.exe" "%cd%\%1" "%cd%\C++ Source Code\main.cpp"
 pause
-g++ "%cd%\C++ Source Code\main.cpp" -o "%cd%\Binaries\%2"
+g++ -std=c++11 "%cd%\C++ Source Code\main.cpp" -o "%cd%\Binaries\%2"
 
 :fin
 if "%3"=="-r" goto ArgumentRun

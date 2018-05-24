@@ -1,3 +1,4 @@
+// THIS ONE!!
 #ifndef STANDARD_CORN_H_INCLUDED
 #define STANDARD_CORN_H_INCLUDED
 
@@ -267,9 +268,50 @@ class CornStream{public:
 	friend CornStream &operator<<(CornStream& cornStream, char s);
 	template <class T> friend CornStream &operator<<(CornStream& cornStream, Array<T>* a);
 	template <class T> friend CornStream &operator<<(CornStream& cornStream, Matrix<T>* a);
+	
+	friend CornStream &operator>>(CornStream& cornStream, char* s);
+	friend CornStream &operator>>(CornStream& cornStream, string &s);
+	friend CornStream &operator>>(CornStream& cornStream, int &s);
+	friend CornStream &operator>>(CornStream& cornStream, float &s);
+	//friend CornStream &operator<<(CornStream& cornStream, bool s);
+	friend CornStream &operator>>(CornStream& cornStream, char &s);
 
 };
+//  wait
 
+void wait(int milliseconds){
+	Sleep(milliseconds);}
+	
+//	getch
+void pause(){
+	cin.ignore();}
+
+//	Read
+
+/*CornStream &operator>>(CornStream& cornStream, char* s){
+	getline(cin, s);
+	return cornStream;}
+*/
+
+CornStream &operator>>(CornStream& cornStream, string& s){
+	getline(cin, s);
+	return cornStream;}
+
+
+CornStream &operator>>(CornStream& cornStream, int& s){
+	cin>>s;
+	return cornStream;}
+
+CornStream &operator>>(CornStream& cornStream, float& s){
+	cin>>s;
+	return cornStream;}
+
+CornStream &operator>>(CornStream& cornStream, char& s){
+	cin>>s;
+	return cornStream;}
+
+
+//	Print
 CornStream &operator<<(CornStream& cornStream, char* s){
 	cout<<s;
 	return cornStream;}

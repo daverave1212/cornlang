@@ -390,6 +390,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 	bool thisLineWasEndOfClass	= false;
 	bool thisLineWasClassDefinition = false;
 	bool isIgnoringEverything	= false;
+	bool thisLineIsNextLineAfterClassDefinition = false;
 	int indentationLevel		= 0;
 	int extraIndentationLevel 	= 0;
 	std::vector<int> indentations	= std::vector<int>(nLinesInText);
@@ -528,18 +529,25 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 					}
 				}
 				check(":"){		//NEEDS TESTING
-					if(IsThisWordLastWordOfLine){				//class Object:
+					if(IsThisWordLastWordOfLine){
 						extraIndentationLevel++;
 						if(previousWord == "start"){
 							outputWord = "";}
 						else if(thisLineWasClassDefinition){
+							if(in[i][j-2] == "extends"){
+								outputWord = "{public:";}
+							else{
+								outputWord == ": public Object{public:";
+							}
 							outputWord = "{";}
+						else if(addBracketAtTheEnd){
+							outputWord = "";}
 						else{									//void aFunction():
 							outputWord = "{";
 							currentClassAndFunctionLevel++;}}
 					else {
 						outputWord = inputWord;
-						outputWord += "~~~~~~~";
+						outputWord += "%%THERE IS AN ERROR HERE%%";
 					}}
 				else{
 				    print "FOUND AN OPERATOR WE DEFINITELY DON'T KNOW. It's '";
@@ -604,6 +612,10 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						addParanthesisAtTheEnd = true;
 						addBracketAtTheEnd = true;
 						break;
+					case ELSE:
+						outputWord = "else";
+						addBracketAtTheEnd = true;
+						break;
 					case FOR:
 						outputWord = "for";
 						addBracketAtTheEnd = true;
@@ -661,12 +673,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 		}//END OF THE LINE TO PARSE, ADDING APPENDAGES AND POSTPROCESSING
 
 		// adding Brackets, Colons, etc
-		if(thisLineWasEndOfClass){
-			thisLineWasEndOfClass = false;
-			for(int staticIter = 0; staticIter <= staticMembers.currentMember; staticIter++){
-				LastWordOfOutputLine += "\n" + staticMembers.words[staticIter][0];}
-			currentClass = "~~~";
-			staticMembers.clear();}
+
 		if(thisLineWasStaticMethod){
             thisLineWasStaticMethod = false;}
 		if(thisLineWasStaticAttribute){
@@ -683,8 +690,21 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 			LastWordOfOutputLine += "{";}
 		if(addSemicolonAtTheEnd && out[i].size() > 0){
 			LastWordOfOutputLine += ";";}
+		if(thisLineIsNextLineAfterClassDefinition){
+			thisLineIsNextLineAfterClassDefinition = false;
+			if(out[i].size() > 0){
+				out[i][0] = "string type = \"" + currentClass + " \" ;\t string getType(){ return type;}\n" + out[i][0];}
+			else{
+				out[i].push_back("string type = \"" + currentClass + "\";string getType(){ return type; }\n");}}
 		if(thisLineWasClassDefinition){
-			thisLineWasClassDefinition = false;}
+			thisLineWasClassDefinition = false;
+			thisLineIsNextLineAfterClassDefinition = true;}
+		if(thisLineWasEndOfClass){
+			thisLineWasEndOfClass = false;
+			for(int staticIter = 0; staticIter <= staticMembers.currentMember; staticIter++){
+				LastWordOfOutputLine += "\n" + staticMembers.words[staticIter][0];}
+			currentClass = "~~~";
+			staticMembers.clear();}
 		indentations[i] = indentationLevel;
 
 	}//END OF THE WHOLE TEXT TO PARSE

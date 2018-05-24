@@ -12,6 +12,7 @@
 #define BRACKET		8
 #define STATIC		10
 #define IF			11
+#define ELSE		111
 #define WHILE		12
 #define FOR			13
 #define AND			14
