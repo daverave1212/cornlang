@@ -19,6 +19,7 @@
 #define OR			15
 #define OF			16
 #define EXTENDS		20
+#define TEMPLATE	21
 
 #define PRINT		30
 #define READ		31

@@ -252,10 +252,15 @@ string substring(string s, int startIndex, int len){
 
 string substringUntilPosition(string s, int endIndex){
 	return s.substr(0, endIndex - 1);}
+	
+string substringUntil(string s, int endIndex){
+	return s.substr(0, endIndex - 1);}
 
 string substringFromPosition(string s, int startIndex){
-	return s.substr(startIndex - 1, s.length() - startIndex + 1);
-}
+	return s.substr(startIndex - 1, s.length() - startIndex + 1);}
+
+string substringFrom(string s, int startIndex){
+	return s.substr(startIndex - 1, s.length() - startIndex + 1);}
 
 //-------------------------------- Print --------------------------------
 class CornStream{public:

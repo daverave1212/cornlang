@@ -30,6 +30,7 @@ void initMap(Map<int> &m){
 	m.push("or", OR);
 	m.push("of", OF);
 	m.push("extends", EXTENDS);
+	m.push("template", TEMPLATE);
 	
 	m.push("print", PRINT);
 	m.push("read", READ);

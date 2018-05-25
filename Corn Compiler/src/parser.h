@@ -391,6 +391,8 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 	bool thisLineWasClassDefinition = false;
 	bool isIgnoringEverything	= false;
 	bool thisLineIsNextLineAfterClassDefinition = false;
+	bool thisLineWasFunctionDefinition = false;
+	bool isInTemplateDefinition = false;
 	int indentationLevel		= 0;
 	int extraIndentationLevel 	= 0;
 	std::vector<int> indentations	= std::vector<int>(nLinesInText);
@@ -410,6 +412,12 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 			std::string outputWord = "";
 			//CODE FOR INTERPRETING WORDS IS HERE
 
+			if(inputWord[0] == "@"){
+				if(inputWord[2] == "o"){
+					isIgnoringEverything = false;
+				}
+			}
+			
 			if(isIgnoringEverything){
 				outputWord = inputWord;}
 
@@ -478,8 +486,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 								else{
 									if(kStack == 0 && kLine[kIndex] != "["){
 										startGetIndex++;
-										break;}
-									else{}}}
+										break;}}}
 							else{
 								if(lastWordWasNotOperator){		//prevents return a[1]
 									startGetIndex++;
@@ -515,11 +522,15 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 					if(isInTemplate){
 						currentTemplateLevel++;}
 					}
+					if(isInTemplateDefinition){
+						outputWord += "typename";
+					}
 				check(">"){
 					outputWord = ">";
 					if(isInTemplate){
 						currentTemplateLevel--;
 						if(currentTemplateLevel == 0){
+							isInTemplateDefinition = false;
 							isInTemplate = false;}
 						if(nextWord != "(" && code(nextWord) != CLASS){
 							outputWord += "*";}}}
@@ -537,13 +548,14 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 							if(in[i][j-2] == "extends"){
 								outputWord = "{public:";}
 							else{
-								outputWord == ": public Object{public:";
-							}
-							outputWord = "{";}
+								outputWord = ": public Object{public:";}}
 						else if(addBracketAtTheEnd){
+							print "\t > CACAC CAINE TAUR\n";
 							outputWord = "";}
 						else{									//void aFunction():
+							thisLineWasFunctionDefinition = true;
 							outputWord = "{";
+							print "\t > CACAC CAINE TAUR ALRUN\n";
 							currentClassAndFunctionLevel++;}}
 					else {
 						outputWord = inputWord;
@@ -572,6 +584,10 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						map.push(nextWord, CLASSNAME);
 						currentClass = nextWord;
 						thisLineWasClassDefinition = true;
+						break;
+					case TEMPLATE:
+						isInTemplateDefinition = true;
+						outputWord = "template";
 						break;
 					case CLASSNAME:
 						outputWord = inputWord;
@@ -655,7 +671,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						outputWord+= "srand(time(NULL));\n";
 						break;
 					case FINISH:
-						outputWord = "return 0;}";
+						outputWord = "cout<<\"Program ended. Press enter.\";pause();return 0;}";
 						break;
 					case PRINT:
 						outputWord = ";cornStream<<";
@@ -693,7 +709,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 		if(thisLineIsNextLineAfterClassDefinition){
 			thisLineIsNextLineAfterClassDefinition = false;
 			if(out[i].size() > 0){
-				out[i][0] = "string type = \"" + currentClass + " \" ;\t string getType(){ return type;}\n" + out[i][0];}
+				out[i][0] = "string type = \"" + currentClass + "\" ;\t string getType(){ return type;}\n" + out[i][0];}
 			else{
 				out[i].push_back("string type = \"" + currentClass + "\";string getType(){ return type; }\n");}}
 		if(thisLineWasClassDefinition){
@@ -705,6 +721,9 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 				LastWordOfOutputLine += "\n" + staticMembers.words[staticIter][0];}
 			currentClass = "~~~";
 			staticMembers.clear();}
+		if(thisLineWasFunctionDefinition && currentClass != "~~~"){
+			thisLineWasFunctionDefinition = false;
+			out[i][0] = "virtual " + out[i][0];}
 		indentations[i] = indentationLevel;
 
 	}//END OF THE WHOLE TEXT TO PARSE

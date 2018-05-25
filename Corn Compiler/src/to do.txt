@@ -9,6 +9,7 @@ ALL non-primitive objects are automatically pointers (Object o - Object* o)
 	
 	Classes
 All clases have a getType() by default
+Members of classes are public by default
 	
 	Syntax
 Array of <string> myArray = new Array of <string>()
