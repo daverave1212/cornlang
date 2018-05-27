@@ -418,7 +418,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 				}
 			}
 			
-			if(isIgnoringEverything){
+			else if(isIgnoringEverything){
 				outputWord = inputWord;}
 
 			// escaped word (~~)
