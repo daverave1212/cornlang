@@ -31,6 +31,7 @@ int main(int argc, char* argv[])
 		outFullPath << "CornStream cornStream;\n";
 		outFullPath << "\n";
 		outFullPath << parseCode(argv[1], myMap);
+		//cin>>x;
 		return 0;
 	}
 

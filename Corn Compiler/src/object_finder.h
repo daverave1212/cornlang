@@ -131,10 +131,10 @@ template <class T> class Map{public:
             return nullElement;
         else if(currentLetterIndex == wordLength) {
             if(letterIterator->hasData){
-                print "Found word " print word print ". Returning it.\n";
+             //   print "Found word " print word print ". Returning it.\n";
                 return letterIterator -> data;}
 			else{
-				print "Word not found " print word print ". Returning null.\n";
+			//	print "Word not found " print word print ". Returning null.\n";
 				return nullElement;
 			}
             }

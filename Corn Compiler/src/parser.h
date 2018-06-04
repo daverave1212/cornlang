@@ -119,6 +119,11 @@ inline bool isStringNumber(std::string s){
 		return true;}
 	else return false;}
 
+inline bool isCharNumber(char c){
+	if(digitCharacters.find(c) != std::string::npos){
+		return true;}
+	else return false;}
+
 inline bool isStringOperator(std::string s){
 	if(s.length() == 0 || s.length() > 2){
 		return false;}
@@ -133,20 +138,13 @@ inline bool isQuote(char c){
 	else return false;}
 
 inline bool isStringEscaped(std::string s){
-	print "\t\tCHECKING STRING ESCAPED ";
-	print s;
-	print "\n";
 	if(s.length() < 2) return false;
 	if(s[0] == '~' && s[1] == '~'){
-		print "\t\t\tOBVIOUSLY ESCAPED NOOB LOL\n";
 		return true;}
 	else return false;}
 
 
 inline std::string parseEscapedString(std::string s){
-	print "\t\t THIS IS... A SPECIAL REQUEST";
-	print s.substr(2, s.length() - 2);
-	print "\n";
 	return s.substr(2, s.length() - 2);
 }
 
@@ -162,12 +160,8 @@ void splitStringIntoWords(std::string &s, std::vector<std::string>& v){
         char currentLetter = s[i];
 
 		if( isQuote(currentLetter) ){
-			print "Found a quote----\n";
 			if( !isProcessingString ){
 				if(currentWord.length() > 0){
-					print "Found a quote. Pushing word: ";
-					print currentWord;
-					print "\n";
 					v.push_back(currentWord);
 					currentWord = "";}
 				currentWord = QUOTESTRING;
@@ -175,54 +169,55 @@ void splitStringIntoWords(std::string &s, std::vector<std::string>& v){
 				lastCharacterWasDoubleOperator = false;}
 			else{
 				currentWord += currentLetter;
-				print "Ended a string. Pushing it as a whole word: ";
-				print currentWord;
-				print "\n";
 				v.push_back(currentWord);
 				currentWord = "";
 				isProcessingString = false;}}
 
 		else if(isProcessingString){
-			currentWord += currentLetter;
-		}
+			currentWord += currentLetter;}
 
         else if( isSpaceOrTab(currentLetter) ){ //..."  "...
             if(currentWord.length() > 0){
-				print "Found tab or space. Pushing word: ";
-				print currentWord;
-				print "\n";
                 v.push_back(currentWord);
                 currentWord = "";}
             lastCharacterWasDoubleOperator = false;}
 
         else if( isSingleOperator(currentLetter)){ //...(...
-            if(currentWord.length() > 0){
-				print "Found single operator. Pushing word: ";
-				print currentWord;
-				print "\n";
-                v.push_back(currentWord);}
-            currentWord = currentLetter;
-			print "Now pushing operator: ";
-			print currentWord;
-			print "\n";
-            v.push_back(currentWord);
-            currentWord = "";
-            lastCharacterWasDoubleOperator = false;}
+			std::cout<<"Found . and next letter is "<<s[i+1]<<std::endl;
+			if(s[i+1] == 'l'){
+				std::cout<<">>>>>>>>> HERE\n";
+			}
+			if(currentLetter == '.' && i < s.size() - 1){
+				if(isCharNumber(s[i+1])){
+					std::cout<<"Also here. It won't split\n";
+					// don't split here...
+					currentWord += currentLetter;}
+				else{
+					if(currentWord.length() > 0){
+						v.push_back(currentWord);}
+					currentWord = currentLetter;
+					v.push_back(currentWord);
+					currentWord = "";
+					lastCharacterWasDoubleOperator = false;
+				}
+			}
+			else{
+				if(currentWord.length() > 0){
+					v.push_back(currentWord);}
+				currentWord = currentLetter;
+				v.push_back(currentWord);
+				currentWord = "";
+				lastCharacterWasDoubleOperator = false;}
+			}
 
         else if( isDoubleOperator(currentLetter) ){ //...+ or ...+=... or >= BUT NOT >>
             if( lastCharacterWasDoubleOperator ){
                 currentWord += currentLetter;
-				print "Found double operator. Pushing it: ";
-				print currentWord;
-				print "\n";
                 v.push_back(currentWord);
                 currentWord = "";
                 lastCharacterWasDoubleOperator = false;}
             else{
                 if(currentWord.length() > 0){
-					print "Found a (possible double) operator. Pushing word behind: ";
-					print currentWord;
-					print "\n";
                     v.push_back(currentWord);}
 				if(currentLetter == '>'){
 					lastCharacterWasDoubleOperator = false;}
@@ -232,11 +227,8 @@ void splitStringIntoWords(std::string &s, std::vector<std::string>& v){
                 currentWord += currentLetter;
 				}}
 
-        else { //...aLetter...
+        else { //...aLetter... or 129287
             if(lastCharacterWasDoubleOperator){
-				print "Found a single-double-operator. Pushing it: ";
-				print currentWord;
-				print "\n";
                 v.push_back(currentWord);
                 currentWord = "";
                 lastCharacterWasDoubleOperator = false;}
@@ -304,6 +296,7 @@ class StaticMembers{public:
 				changeLine += staticMemberParentClass + "::" + words[currentMember][indexOfObject] + " ";}
 			else{
 				changeLine += words[currentMember][i] + " ";}}
+		changeLine += ";";
 		words[currentMember].clear();
 		words[currentMember].push_back(changeLine);
 		return returnedLine;}
@@ -378,7 +371,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 	bool nextWordIsImportPath 	= false;
 	bool addParanthesisAtTheEnd	= false;
 	bool addBracketAtTheEnd		= false;
-	std::string currentClass	= "NONE";
+	std::string currentClass	= "~~~";
 	bool isInTemplate			= false;
 	bool addStarAfterThisWord	= false;
 	int currentTemplateLevel	= 0;	//increases when finds <, decreases when finds >
@@ -417,7 +410,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 					isIgnoringEverything = false;
 				}
 			}
-			
+
 			else if(isIgnoringEverything){
 				outputWord = inputWord;}
 
@@ -437,19 +430,20 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 
 			// an OPERATOR
 			else if(isStringOperator(inputWord)){	// + - = \ ...
-				print inputWord;
-				print "\n";
+
 				if(inputWord == ""){}
 				check(";"){
 					extraIndentationLevel--;
 					addSemicolonAtTheEnd = false;
 					outputWord = ";}";}
 				check("."){
+					std::cout<< ">>>>>>>>>> HERE\n";
 					if(map.getData(previousWord) == CLASSNAME){
 						outputWord = "::";}
 					else{
 						outputWord = "->";}}
 				check("["){
+					print "setting j to -1";
 					// MAY BE VERY BUGGED. CHECK LATER
 					int kCurrent = j;
 					j = -1;	//cuz it will do the j++ and restart for all the line
@@ -457,41 +451,44 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 					out[i].clear();
 					std::vector<std::string> kLine = std::vector<std::string>(in[i].size());
 					int indexOfBracket = 0;
-					for(int kIndex = 0; kIndex < in[i].size(); kIndex++){
+					for(int kIndex = 0; kIndex < in[i].size(); kIndex++){			// copy every word from in to kLine
 						kLine[kIndex] = in[i][kIndex];}
 					bool lineContainsBracket = true;
 					while(lineContainsBracket){
 						lineContainsBracket = false;
-						for(int kIndex = 0; kIndex < kLine.size(); kIndex++){
+						for(int kIndex = 0; kIndex < kLine.size(); kIndex++){		// find the position of the first [
 							if(kLine[kIndex] == "["){
 								indexOfBracket = kIndex;
 								lineContainsBracket = true;
 								break;}}
-						if(lineContainsBracket == false){
+						if(lineContainsBracket == false){							// if no [ was found, end
 							break;}
 						int kStack = 0;
 						int startGetIndex = 0;
-						bool lastWordWasNotOperator = false;
-						for(int kIndex = indexOfBracket; kIndex >= 0; kIndex--){
+						print "startGetIndex = " << startGetIndex << "\n";
+						bool lastWordWasOperator = true;
+						for(int kIndex = indexOfBracket; kIndex >= 0; kIndex--){	// from first [ to 0
 							startGetIndex = kIndex;
-							if(isStringOperator(kLine[kIndex])){
-								lastWordWasNotOperator = false;
-								if(kLine[kIndex] == ")"){
+							print "kIndex = " << kIndex <<", startGetIndex = " << startGetIndex << "\n";
+							if(isStringOperator(kLine[kIndex])){				// if this word is an operator...
+								lastWordWasOperator = true;
+								if(kLine[kIndex] == ")"){					// if it's ( increase stack
 									kStack++;}
-								else if(kLine[kIndex] == "("){
+								else if(kLine[kIndex] == "("){				// if it's ) decrease stack
 									kStack--;
 									if(kStack < 0){
 										startGetIndex++;
+										print "\t\tstartGetIndex = " << startGetIndex << "\n";
 										break;}}
-								else{
-									if(kStack == 0 && kLine[kIndex] != "["){
-										startGetIndex++;
-										break;}}}
-							else{
-								if(lastWordWasNotOperator){		//prevents return a[1]
+								else if(kStack == 0 && kLine[kIndex] != "["){
 									startGetIndex++;
-									break;}
-								else lastWordWasNotOperator = true;}
+									print "\tstartGetIndex = " << startGetIndex << "\n";
+									break;}}
+							else if(!lastWordWasOperator){		//prevents return a[1]
+								print "startGetIndex = " << startGetIndex << "\n";
+								startGetIndex++;
+								break;}
+							else lastWordWasOperator = false;
 						}
 						std::cout << "startGetIndex : " << startGetIndex << "\n";
 						kStack = 0;
@@ -504,27 +501,24 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 								kStack--;
 								if(kStack < 0){
 									break;}}}
-						printArray(kLine);
 						kLine[indexOfBracket] = ",";
-						printArray(kLine);
 						kLine[endGetIndex] = ")";
-						printArray(kLine);
 						insertInArrayBeforePosition(kLine, "(", startGetIndex);
 						printArray(kLine);
 						insertInArrayBeforePosition(kLine, "elem", startGetIndex);
 						printArray(kLine);}
 					in[i] = kLine;
-					printArray(in[i]);}
+					printArray(in[i]);
+					print "Done parsing for.\n";}
 				check("]"){
 					outputWord = ")";}
 				check("<"){
 					outputWord = "<";
 					if(isInTemplate){
 						currentTemplateLevel++;}
-					}
 					if(isInTemplateDefinition){
 						outputWord += "typename";
-					}
+					}}
 				check(">"){
 					outputWord = ">";
 					if(isInTemplate){
@@ -540,11 +534,14 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 					}
 				}
 				check(":"){		//NEEDS TESTING
+					std::cout<<": at i = " << i<< ", j = "<<j<<std::endl;
 					if(IsThisWordLastWordOfLine){
+						std::cout<<"End of line it was indeed"<<std::endl;
 						extraIndentationLevel++;
 						if(previousWord == "start"){
 							outputWord = "";}
 						else if(thisLineWasClassDefinition){
+							std::cout<<"Class at i = " << i<< ", j = "<<j<<std::endl;
 							if(in[i][j-2] == "extends"){
 								outputWord = "{public:";}
 							else{
@@ -553,6 +550,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 							print "\t > CACAC CAINE TAUR\n";
 							outputWord = "";}
 						else{									//void aFunction():
+							std::cout<<"Function at i = " << i<< ", j = "<<j<<std::endl;
 							thisLineWasFunctionDefinition = true;
 							outputWord = "{";
 							print "\t > CACAC CAINE TAUR ALRUN\n";
@@ -561,10 +559,12 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						outputWord = inputWord;
 						outputWord += "%%THERE IS AN ERROR HERE%%";
 					}}
-				else{
-				    print "FOUND AN OPERATOR WE DEFINITELY DON'T KNOW. It's '";
+				else if(j != -1){
+				    /*print "FOUND AN OPERATOR WE DEFINITELY DON'T KNOW. It's ";
                     print inputWord;
-                    print "'\n";
+					print " at j = ";
+					print j;
+                    print "\n"; */
 					outputWord = inputWord;}
 			}
 			// a WORD...
@@ -595,7 +595,11 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						/* VARIANT WITH 'of' keyword: allows both Array<x> a, and Array of <x> a */
 						if( previousWord == "extends" ){			//class Something extends ~~Object~~ :
 							//doNothing()
-						} else {
+						}
+						else if( previousWord == "class" ){
+							//doNothing()
+						}
+						else {
 							if( nextWord == "of"){
 								isInTemplate = true;}
 							else if( isStringOperator(nextWord) ){	//probably Object < | Object > | Object , | Object . | new Object() | (Object) o
@@ -652,7 +656,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						if(LastWordOfInputLine == "does" || LastWordOfInputLine == ":"){
 							thisLineWasStaticMethod = true;}
 						else{
-							staticLineStartIndex = j;
+							staticLineStartIndex = j + 1;
 							thisLineWasStaticAttribute = true;}
 						outputWord = "static";
 						break;
@@ -669,6 +673,7 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 						addSemicolonAtTheEnd = false;
 						outputWord = "int main(int argc, char* argv[]){";
 						outputWord+= "srand(time(NULL));\n";
+						outputWord+= "system(\"color f0\");\n";
 						break;
 					case FINISH:
 						outputWord = "cout<<\"Program ended. Press enter.\";pause();return 0;}";
@@ -712,18 +717,27 @@ std::string parseCode(std::string pathToFile, Map<int>& map){
 				out[i][0] = "string type = \"" + currentClass + "\" ;\t string getType(){ return type;}\n" + out[i][0];}
 			else{
 				out[i].push_back("string type = \"" + currentClass + "\";string getType(){ return type; }\n");}}
-		if(thisLineWasClassDefinition){
-			thisLineWasClassDefinition = false;
-			thisLineIsNextLineAfterClassDefinition = true;}
 		if(thisLineWasEndOfClass){
 			thisLineWasEndOfClass = false;
 			for(int staticIter = 0; staticIter <= staticMembers.currentMember; staticIter++){
 				LastWordOfOutputLine += "\n" + staticMembers.words[staticIter][0];}
 			currentClass = "~~~";
 			staticMembers.clear();}
-		if(thisLineWasFunctionDefinition && currentClass != "~~~"){
+		if(thisLineWasFunctionDefinition && currentClass != "~~~" && !thisLineWasClassDefinition){
 			thisLineWasFunctionDefinition = false;
-			out[i][0] = "virtual " + out[i][0];}
+			print "Line " << i<<" is virtual now\n";
+			if(out[i][0] == "static"){
+				// dontMakeItStatic
+			}
+			else if(out[i][0] == "public" || out[i][0] == "private"){
+				out[i][1] = "virtual " + out[i][1];
+			}
+			else out[i][0] = "virtual " + out[i][0];}
+		if(thisLineWasFunctionDefinition){
+			thisLineWasFunctionDefinition = false;}
+		if(thisLineWasClassDefinition){
+			thisLineWasClassDefinition = false;
+			thisLineIsNextLineAfterClassDefinition = true;}
 		indentations[i] = indentationLevel;
 
 	}//END OF THE WHOLE TEXT TO PARSE

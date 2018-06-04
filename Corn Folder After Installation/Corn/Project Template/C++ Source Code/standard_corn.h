@@ -1,4 +1,4 @@
-// THIS ONE!!
+// THIS ONE
 #ifndef STANDARD_CORN_H_INCLUDED
 #define STANDARD_CORN_H_INCLUDED
 
@@ -99,9 +99,10 @@ template <class T> class Array : public Object{public:
     string asString(){
         string returnedString = "";
         for(int i = 0; i<length; i++){
-			cout<<typeOf(v[i]);
-			cout<<endl;
-            returnedString += toString(v[i]) + " ";}
+			//cout<<typeOf(v[i]);
+			//cout<<endl;
+            returnedString += toString(v[i]) + " ";
+			cout<<" returned string = " << returnedString << endl;}
         return returnedString;}
 
     Array(){}
@@ -179,15 +180,12 @@ template <class T> class Matrix : public Object{public:
 
 //-------------------------------- ARRAYS AND STRINGS elemmm ---------------------------------
 template <class T> T& elem(Array<T>* a, int index){
-	cout << "Called for Array<T>*";
     return a->v[index - 1];}
 
 template <class T> Array<T>* elem(Matrix<T>* m, int index){
-	cout << "Called for MAtrix<T>*";
 	return m->matrix->at(index);}
 
-char& elem(string s, int index){
-	cout << "Called for char";
+char& elem(string &s, int index){
     return s[index - 1];}
 
 //-------------------------------- String API / Some Array API --------------------------------
@@ -198,14 +196,16 @@ int length(string s){
 template <class T> int length(Array<T>* a){
 	return a->length;}
 
-bool contains(string s, string c){
-	if (size_t index = s.find(c)) {
-		return true;}
-	return false;}
+
 
 bool contains(string s, char chr){
-	string c = chr + "";
-	if (size_t index = s.find(c)) {
+	for(int i = 0; i<s.length(); i++){
+		if(s[i] == chr) return true;
+	}
+	return false;}
+	
+bool contains(string s, string c){
+	if (s.find(c) != string::npos) {
 		return true;}
 	return false;}
 
@@ -245,16 +245,19 @@ Array<string>* split(string s, string delimiters){
 			wordLength = 0;}
 		else{
 			wordLength++;}}
+	if(wordLength > 0 && s.substr(wordStartPos, wordLength).length() > 0){
+		returnedArray->push( s.substr(wordStartPos, wordLength) );
+	}
 	return returnedArray;}
 
 string substring(string s, int startIndex, int len){
 	return s.substr(startIndex-1, len);}
 
 string substringUntilPosition(string s, int endIndex){
-	return s.substr(0, endIndex - 1);}
+	return s.substr(0, endIndex);}
 	
 string substringUntil(string s, int endIndex){
-	return s.substr(0, endIndex - 1);}
+	return s.substr(0, endIndex);}
 
 string substringFromPosition(string s, int startIndex){
 	return s.substr(startIndex - 1, s.length() - startIndex + 1);}
@@ -299,7 +302,8 @@ void pause(){
 */
 
 CornStream &operator>>(CornStream& cornStream, string& s){
-	getline(cin, s);
+	//getline(cin, s);
+	cin>>s;
 	return cornStream;}
 
 
@@ -320,6 +324,12 @@ CornStream &operator>>(CornStream& cornStream, char& s){
 CornStream &operator<<(CornStream& cornStream, char* s){
 	cout<<s;
 	return cornStream;}
+
+CornStream &operator<<(CornStream& cornStream, bool s){
+	if(s) cout<<"true";
+	else cout<<"false";
+	return cornStream;}
+	
 
 CornStream &operator<<(CornStream& cornStream, string s){
 	cout<<s;
@@ -359,10 +369,20 @@ int toInt(string s){
 	return atoi(s.c_str());}
 
 int toInt(float f){
-	return (int)f;}
+	return static_cast<int>(f);}
 
-int toInt(char c){
+int charCode(char c){
 	return (int)c;}
+	
+/*int toInt(bool b){
+	if(b) return 1;
+	else return 0;}
+*/
+
+int boolToInt(bool b){
+	if(b) return 1;
+	else return 0;
+}
 
 float toFloat(string s){
 	return atof(s.c_str());}
@@ -371,6 +391,15 @@ float toFloat(int i){
 	return (float)i;}
 
 
+bool toBool(string s){
+	if(s == "true") return true;
+	return false;}
+
+bool toBool(char c){
+	if(c == 't' || c == 1) return true;
+	return false;
+}
+	
 //-------------------------------- File Class --------------------------------
 
 class File{public:
