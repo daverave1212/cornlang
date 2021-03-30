@@ -1,4 +1,4 @@
-# Corn : A python-like language that compiles to C++
+# Corn: A Python-Like Language That Compiles to C++
 
 ## How to install Corn:
 0. Clone the repository on your Windows 7/10 machine.
